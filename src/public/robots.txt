@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://komikkuya.com/sitemap.xml
+
+# Crawl-delay (optional, untuk mengurangi beban server)
+Crawl-delay: 1

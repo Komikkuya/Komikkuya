@@ -1,0 +1,71 @@
+const fetch = require('node-fetch');
+
+const chapterController = {
+    read: async (req, res) => {
+        try {
+            const { chapterUrl } = req.params;
+
+            if (!chapterUrl) {
+                return res.status(400).render('error', {
+                    title: 'Error - Komikkuya',
+                    error: 'Chapter URL is required'
+                });
+            }
+
+            // Remove leading slash if present and construct the full URL
+            const cleanUrl = chapterUrl.startsWith('/') ? chapterUrl.slice(1) : chapterUrl;
+            const fullUrl = `https://komiku.id/${cleanUrl}`;
+
+            const response = await fetch(`https://komiku-api-self.vercel.app/api/chapter?url=${encodeURIComponent(fullUrl)}`);
+            const data = await response.json();
+
+            if (!data || !data.images) {
+                return res.status(404).render('error', {
+                    title: 'Error - Komikkuya',
+                    error: 'Chapter not found'
+                });
+            }
+
+            // Extract chapter numbers from URLs for navigation
+            const currentChapterNumber = cleanUrl.match(/chapter-(\d+)/)?.[1] || '';
+            const prevChapterNumber = data.navigation?.prev?.url?.match(/chapter-(\d+)/)?.[1] || '';
+            const nextChapterNumber = data.navigation?.next?.url?.match(/chapter-(\d+)/)?.[1] || '';
+
+            // Extract manga detail URL from chapterList
+            const mangaDetailUrl = data.navigation?.chapterList ?
+                `${new URL(data.navigation.chapterList).pathname}` :
+                null;
+
+            res.render('manga/chapter', {
+                title: `${data.title} - ${data.mangaTitle} | Baca Gratis Komikkuya`,
+                metaDescription: `Baca ${data.title} dari ${data.mangaTitle} gratis online di Komikkuya. Tanpa iklan, loading cepat!`,
+                metaKeywords: `${data.mangaTitle}, ${data.title}, baca ${data.mangaTitle} gratis, chapter ${currentChapterNumber}`,
+                canonicalUrl: `https://komikkuya.com/chapter/${cleanUrl}`,
+                currentPath: `/chapter/${cleanUrl}`,
+                chapter: data,
+                navigation: {
+                    prev: data.navigation?.prev?.url ? {
+                        url: `/chapter${new URL(data.navigation.prev.url).pathname}`,
+                        title: data.navigation.prev.title
+                    } : null,
+                    next: data.navigation?.next?.url ? {
+                        url: `/chapter${new URL(data.navigation.next.url).pathname}`,
+                        title: data.navigation.next.title
+                    } : null,
+                    currentChapter: currentChapterNumber,
+                    prevChapter: prevChapterNumber,
+                    nextChapter: nextChapterNumber,
+                    mangaDetailUrl
+                }
+            });
+        } catch (error) {
+            console.error('Error fetching chapter:', error);
+            res.status(500).render('error', {
+                title: 'Error - Komikkuya',
+                error: 'Failed to load chapter'
+            });
+        }
+    }
+};
+
+module.exports = chapterController; 

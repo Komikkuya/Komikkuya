@@ -1,0 +1,16 @@
+<div class="min-h-screen flex items-center justify-center bg-primary-900">
+    <div class="text-center">
+        <div class="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-purple-500 mb-6"></div>
+        <p class="text-white text-lg">Loading doujin page <%= page %>...</p>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const page = "<%= page %>";
+        // setelah 1 detik redirect ke API page
+        setTimeout(() => {
+            window.location.href = `/doujin?page=${page}`;
+        }, 1000);
+    });
+</script>

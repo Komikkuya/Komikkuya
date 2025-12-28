@@ -1,0 +1,352 @@
+<div class="min-h-screen bg-gradient-to-b from-primary-900 to-primary-800 py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header with animated gradient background -->
+    <div class="relative overflow-hidden rounded-2xl mb-12">
+      <div class="absolute inset-0 bg-gradient-to-r from-purple-600/40 to-pink-600/40 animate-gradient"></div>
+      <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0wIDBoNjB2NjBIMHoiLz48cGF0aCBkPSJNMzAgMzBoMXYxaC0xeiIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIuMSIvPjwvZz48L3N2Zz4=')] opacity-10"></div>
+      <div class="absolute inset-0 bg-gradient-to-b from-transparent to-primary-900/80"></div>
+      <div class="relative px-6 py-16 sm:px-12 sm:py-20 text-center">
+        <div class="inline-block mb-6">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/30 mx-auto">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+        </div>
+        <h1 class="text-4xl sm:text-5xl font-bold text-white mb-4 tracking-tight">Reading History</h1>
+        <p class="text-lg text-gray-300 max-w-2xl mx-auto">Lacak perjalanan membaca manga dengan mudah kembali ke bagian yang terakhir Kamu baca</p>
+      </div>
+    </div>
+
+    <!-- History Container with Glassmorphism -->
+    <div class="bg-primary-800/40 backdrop-blur-lg rounded-2xl shadow-xl border border-purple-500/10 p-6 sm:p-8">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-semibold text-white">Your Reading History</h2>
+        <button id="clearAllHistory" class="px-3 py-1.5 text-sm text-red-400 hover:text-red-300 bg-red-900/20 hover:bg-red-900/30 rounded-lg transition-colors flex items-center">
+          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+          </svg>
+          Clear All History
+        </button>
+      </div>
+      <div id="history-container">
+        <!-- History items will be loaded here -->
+        <div class="text-center py-12">
+          <div class="text-purple-400 mb-4">
+            <svg class="w-16 h-16 mx-auto animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl font-medium text-white mb-2">Loading History...</h3>
+          <p class="text-gray-400">Please wait while we load your reading history</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+  <div class="bg-primary-800 rounded-xl shadow-2xl border border-purple-500/20 max-w-md w-full mx-4 transform scale-95 transition-transform duration-300">
+    <div class="p-6">
+      <h3 class="text-xl font-semibold text-white mb-2">Delete History Item</h3>
+      <p class="text-gray-300 mb-6">Yakin Mau di apus? gk bakal bisa balik lagi.</p>
+      <div class="flex justify-end space-x-3">
+        <button id="cancelDelete" class="px-4 py-2 bg-primary-700 text-gray-300 rounded-lg hover:bg-primary-600 transition-colors">Cancel</button>
+        <button id="confirmDelete" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Clear All Confirmation Modal -->
+<div id="clearAllModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+  <div class="bg-primary-800 rounded-xl shadow-2xl border border-purple-500/20 max-w-md w-full mx-4 transform scale-95 transition-transform duration-300">
+    <div class="p-6">
+      <h3 class="text-xl font-semibold text-white mb-2">Clear All History</h3>
+      <p class="text-gray-300 mb-6">Yakin Mau di apus semua? gk bakal bisa balik lagi.</p>
+      <div class="flex justify-end space-x-3">
+        <button id="cancelClearAll" class="px-4 py-2 bg-primary-700 text-gray-300 rounded-lg hover:bg-primary-600 transition-colors">Cancel</button>
+        <button id="confirmClearAll" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">Clear All</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Client-side code to handle history
+  document.addEventListener('DOMContentLoaded', function() {
+    const historyContainer = document.getElementById('history-container');
+    const deleteModal = document.getElementById('deleteModal');
+    const clearAllModal = document.getElementById('clearAllModal');
+    const cancelDelete = document.getElementById('cancelDelete');
+    const confirmDelete = document.getElementById('confirmDelete');
+    const cancelClearAll = document.getElementById('cancelClearAll');
+    const confirmClearAll = document.getElementById('confirmClearAll');
+    const clearAllHistoryBtn = document.getElementById('clearAllHistory');
+    
+    let currentDeleteIndex = -1;
+    
+    // Load history from localStorage
+    function loadHistory() {
+      try {
+        const history = JSON.parse(localStorage.getItem('readingHistory') || '[]');
+        return history.sort((a, b) => new Date(b.lastRead) - new Date(a.lastRead));
+      } catch (error) {
+        console.error('Error loading history:', error);
+        return [];
+      }
+    }
+
+    // Format date to a more readable format
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      const now = new Date();
+      const diffTime = Math.abs(now - date);
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays === 0) {
+        return 'Today';
+      } else if (diffDays === 1) {
+        return 'Yesterday';
+      } else if (diffDays < 7) {
+        return `${diffDays} days ago`;
+      } else {
+        return date.toLocaleDateString();
+      }
+    }
+
+    // Delete a single history item
+    function deleteHistoryItem(index) {
+      try {
+        const history = loadHistory();
+        history.splice(index, 1);
+        localStorage.setItem('readingHistory', JSON.stringify(history));
+        updateHistoryDisplay();
+      } catch (error) {
+        console.error('Error deleting history item:', error);
+      }
+    }
+    
+    // Clear all history
+    function clearAllHistoryItems() {
+      try {
+        localStorage.setItem('readingHistory', '[]');
+        updateHistoryDisplay();
+      } catch (error) {
+        console.error('Error clearing history:', error);
+      }
+    }
+    
+    // Show delete confirmation modal
+    function showDeleteModal(index) {
+      currentDeleteIndex = index;
+      deleteModal.classList.add('opacity-100', 'pointer-events-auto');
+      deleteModal.querySelector('.transform').classList.remove('scale-95');
+      deleteModal.querySelector('.transform').classList.add('scale-100');
+    }
+    
+    // Hide delete confirmation modal
+    function hideDeleteModal() {
+      deleteModal.classList.remove('opacity-100', 'pointer-events-auto');
+      deleteModal.classList.add('opacity-0', 'pointer-events-none');
+      deleteModal.querySelector('.transform').classList.remove('scale-100');
+      deleteModal.querySelector('.transform').classList.add('scale-95');
+      currentDeleteIndex = -1;
+    }
+    
+    // Show clear all confirmation modal
+    function showClearAllModal() {
+      clearAllModal.classList.add('opacity-100', 'pointer-events-auto');
+      clearAllModal.querySelector('.transform').classList.remove('scale-95');
+      clearAllModal.querySelector('.transform').classList.add('scale-100');
+    }
+    
+    // Hide clear all confirmation modal
+    function hideClearAllModal() {
+      clearAllModal.classList.remove('opacity-100', 'pointer-events-auto');
+      clearAllModal.classList.add('opacity-0', 'pointer-events-none');
+      clearAllModal.querySelector('.transform').classList.remove('scale-100');
+      clearAllModal.querySelector('.transform').classList.add('scale-95');
+    }
+
+    // Update the history display
+    function updateHistoryDisplay() {
+      const history = loadHistory();
+      
+      if (history.length === 0) {
+        historyContainer.innerHTML = `
+          <div class="text-center py-16">
+            <div class="text-purple-400 mb-6">
+              <svg class="w-20 h-20 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-medium text-white mb-3">No Reading History</h3>
+            <p class="text-gray-400 mb-6">Start reading manga to build your history</p>
+            <a href="/popular" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg shadow-purple-500/20">
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+              </svg>
+              Explore Popular Manga
+            </a>
+          </div>
+        `;
+        return;
+      }
+
+      historyContainer.innerHTML = `
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          ${history.map((item, index) => {
+            // Calculate reading progress percentage
+            const progressPercentage = item.totalPages && item.readPages ? 
+              Math.round((item.readPages / item.totalPages) * 100) : 0;
+            
+            // Determine progress status
+            let progressStatus = '';
+            if (progressPercentage === 0) {
+              progressStatus = 'Not started';
+            } else if (progressPercentage < 100) {
+              progressStatus = `Page ${item.readPages} of ${item.totalPages}`;
+            } else {
+              progressStatus = 'Completed';
+            }
+            
+            return `
+              <div class="bg-primary-700/20 rounded-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-purple-500/20 border border-purple-500/10" style="--animation-order: ${index};">
+                <div class="relative group">
+                  <a href="${item.url}" class="block">
+                    <div class="relative">
+                      <div class="aspect-w-3 aspect-h-4 overflow-hidden">
+                        <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                      </div>
+                      <div class="absolute inset-0 bg-gradient-to-t from-primary-900 via-primary-900/50 to-transparent opacity-80"></div>
+                      <div class="absolute top-2 right-2">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300 backdrop-blur-sm">
+                          ${formatDate(item.lastRead)}
+                        </span>
+                      </div>
+                      <div class="absolute bottom-0 left-0 right-0 p-3">
+                        <h3 class="text-sm font-semibold text-white mb-0.5 group-hover:text-purple-300 transition-colors truncate">${item.title}</h3>
+                        <p class="text-gray-300 text-xs truncate">${item.chapterTitle}</p>
+                        
+                        <!-- Reading Progress Bar -->
+                        <div class="mt-2 h-1.5 bg-primary-800/50 rounded-full overflow-hidden">
+                          <div class="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full" style="width: ${progressPercentage}%"></div>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1">${progressStatus}</p>
+                      </div>
+                    </div>
+                  </a>
+                  
+                  <!-- Delete Button -->
+                  <button class="delete-history-item absolute top-2 left-2 p-1.5 bg-red-900/50 text-red-300 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" data-index="${index}" title="Delete from history">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+      
+      // Add event listeners to delete buttons
+      document.querySelectorAll('.delete-history-item').forEach(button => {
+        button.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const index = parseInt(button.getAttribute('data-index'));
+          showDeleteModal(index);
+        });
+      });
+    }
+
+    // Event listeners for modals
+    cancelDelete.addEventListener('click', hideDeleteModal);
+    confirmDelete.addEventListener('click', () => {
+      if (currentDeleteIndex !== -1) {
+        deleteHistoryItem(currentDeleteIndex);
+      }
+      hideDeleteModal();
+    });
+    
+    clearAllHistoryBtn.addEventListener('click', showClearAllModal);
+    cancelClearAll.addEventListener('click', hideClearAllModal);
+    confirmClearAll.addEventListener('click', () => {
+      clearAllHistoryItems();
+      hideClearAllModal();
+    });
+    
+    // Close modals when clicking outside
+    deleteModal.addEventListener('click', (e) => {
+      if (e.target === deleteModal) {
+        hideDeleteModal();
+      }
+    });
+    
+    clearAllModal.addEventListener('click', (e) => {
+      if (e.target === clearAllModal) {
+        hideClearAllModal();
+      }
+    });
+
+    // Initial load
+    updateHistoryDisplay();
+  });
+</script>
+
+<style>
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+  
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient 15s ease infinite;
+  }
+  
+  .grid > div {
+    animation: fadeIn 0.5s ease-out forwards;
+    animation-delay: calc(var(--animation-order) * 0.1s);
+    opacity: 0;
+  }
+  
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: rgba(45, 36, 57, 0.5);
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: rgba(147, 51, 234, 0.5);
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(147, 51, 234, 0.7);
+  }
+</style> 
