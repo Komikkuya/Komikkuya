@@ -3,14 +3,18 @@ const fetch = require('node-fetch');
 const popularController = {
     index: async (req, res) => {
         try {
-            const { category = 'manga', page = 1 } = req.query;
+            const { category = 'manga', page = 1, sorttime = 'all' } = req.query;
 
             // Validate category
             const validCategories = ['manga', 'manhwa', 'manhua'];
             const validCategory = validCategories.includes(category) ? category : 'manga';
 
-            // Fetch popular data from API
-            const response = await fetch(`https://komiku-api-self.vercel.app/api/popular?category=${validCategory}&page=${page}`);
+            // Validate sorttime
+            const validSorttimes = ['daily', 'weekly', 'all'];
+            const validSorttime = validSorttimes.includes(sorttime) ? sorttime : 'all';
+
+            // Fetch popular data from API with sorttime
+            const response = await fetch(`https://komiku-api-self.vercel.app/api/popular?category=${validCategory}&page=${page}&sorttime=${validSorttime}`);
 
             if (!response.ok) {
                 throw new Error(`API responded with status: ${response.status}`);
@@ -59,16 +63,19 @@ const popularController = {
             const hasPrevPage = currentPage > 1;
 
             const categoryDisplay = validCategory.charAt(0).toUpperCase() + validCategory.slice(1);
+            const sorttimeDisplay = validSorttime === 'all' ? 'All Time' : validSorttime.charAt(0).toUpperCase() + validSorttime.slice(1);
 
             res.render('popular/index', {
-                title: `${categoryDisplay} Populer - Baca Komik Gratis Online | Komikkuya`,
-                metaDescription: `Baca ${categoryDisplay} populer gratis online di Komikkuya. Koleksi ${categoryDisplay} terbaik dan terpopuler tanpa iklan!`,
+                title: `${categoryDisplay} Populer ${sorttimeDisplay} - Baca Komik Gratis Online | Komikkuya`,
+                metaDescription: `Baca ${categoryDisplay} populer ${sorttimeDisplay.toLowerCase()} gratis online di Komikkuya. Koleksi ${categoryDisplay} terbaik dan terpopuler tanpa iklan!`,
                 metaKeywords: `${categoryDisplay} populer, ${validCategory} terpopuler, baca ${validCategory} gratis, ${validCategory} terbaik, trending ${validCategory}, top ${validCategory}, best ${validCategory}, ${validCategory} ranking, ${validCategory} favorit, ${validCategory} rekomendasi, komikkuya populer, ${validCategory} paling banyak dibaca`,
-                canonicalUrl: `https://komikkuya.my.id/popular?category=${validCategory}`,
-                currentPath: `/popular?category=${validCategory}`,
+                canonicalUrl: `https://komikkuya.my.id/popular?category=${validCategory}&sorttime=${validSorttime}`,
+                currentPath: `/popular?category=${validCategory}&sorttime=${validSorttime}`,
                 items: processedItems,
                 category: validCategory,
                 categories: validCategories,
+                sorttime: validSorttime,
+                sorttimes: validSorttimes,
                 pagination: {
                     currentPage,
                     hasNextPage,

@@ -2,68 +2,100 @@
     <div class="container mx-auto px-4 py-8">
         <!-- Header with title and category tabs -->
         <div class="mb-10">
-            <h1 class="text-4xl font-bold text-white mb-2 tracking-tight">Popular <%= category.charAt(0).toUpperCase() + category.slice(1) %></h1>
+            <h1 class="text-4xl font-bold text-white mb-2 tracking-tight">Popular <%= category.charAt(0).toUpperCase() +
+                    category.slice(1) %>
+            </h1>
             <p class="text-gray-400 mb-6">Yang paling populer di <%= category %> sekarang</p>
-            
+
             <!-- Category Tabs -->
-            <div class="flex flex-wrap gap-2 bg-primary-800/50 backdrop-blur-sm rounded-xl p-1.5 border border-purple-500/20">
-                <% categories.forEach(cat => { %>
-                    <a href="/popular?category=<%= cat %>" 
-                       class="px-4 py-2 rounded-lg transition-all duration-300 <%= cat === category ? 'bg-gradient-to-r from-purple-600 to-purple-500 text-white font-medium shadow-lg shadow-purple-500/20' : 'text-gray-400 hover:text-white hover:bg-primary-700/50' %>">
+            <div
+                class="flex flex-wrap gap-2 bg-primary-800/50 backdrop-blur-sm rounded-xl p-1.5 border border-purple-500/20 mb-4">
+                <% categories.forEach(cat=> { %>
+                    <a href="/popular?category=<%= cat %>&sorttime=<%= sorttime %>"
+                        class="px-4 py-2 rounded-lg transition-all duration-300 <%= cat === category ? 'bg-gradient-to-r from-purple-600 to-purple-500 text-white font-medium shadow-lg shadow-purple-500/20' : 'text-gray-400 hover:text-white hover:bg-primary-700/50' %>">
                         <%= cat.charAt(0).toUpperCase() + cat.slice(1) %>
                     </a>
-                <% }); %>
+                    <% }); %>
+            </div>
+
+            <!-- Sorttime Tabs -->
+            <div class="flex flex-wrap gap-2">
+                <span class="text-gray-400 text-sm self-center mr-2">Sort by:</span>
+                <a href="/popular?category=<%= category %>&sorttime=daily"
+                    class="px-4 py-2 rounded-lg text-sm transition-all duration-300 <%= sorttime === 'daily' ? 'bg-purple-600 text-white font-medium' : 'bg-primary-800/50 text-gray-400 hover:text-white hover:bg-primary-700/50 border border-purple-500/20' %>">
+                    Daily
+                </a>
+                <a href="/popular?category=<%= category %>&sorttime=weekly"
+                    class="px-4 py-2 rounded-lg text-sm transition-all duration-300 <%= sorttime === 'weekly' ? 'bg-purple-600 text-white font-medium' : 'bg-primary-800/50 text-gray-400 hover:text-white hover:bg-primary-700/50 border border-purple-500/20' %>">
+                    Weekly
+                </a>
+                <a href="/popular?category=<%= category %>&sorttime=all"
+                    class="px-4 py-2 rounded-lg text-sm transition-all duration-300 <%= sorttime === 'all' ? 'bg-purple-600 text-white font-medium' : 'bg-primary-800/50 text-gray-400 hover:text-white hover:bg-primary-700/50 border border-purple-500/20' %>">
+                    All Time
+                </a>
             </div>
         </div>
-        
+
         <!-- Manga Grid -->
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-            <% items.forEach(item => { %>
-                <div class="bg-primary-800/80 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg hover:shadow-purple-500/30 transition-all duration-300 group border border-purple-500/10 hover:border-purple-500/30">
+            <% items.forEach(item=> { %>
+                <div
+                    class="bg-primary-800/80 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg hover:shadow-purple-500/30 transition-all duration-300 group border border-purple-500/10 hover:border-purple-500/30">
                     <a href="<%= new URL(item.url).pathname %>" class="block relative">
                         <div class="relative overflow-hidden">
-                            <img src="/manga/image/<%= Buffer.from(item.imageUrl).toString('base64') %>" 
-                                 alt="<%= item.title %>" 
-                                 class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110"
-                                 onerror="this.onerror=null; this.src='<%= item.imageUrl %>';">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                            <div class="absolute top-3 right-3 bg-black/80 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm border border-white/10">
-                                <%= item.stats.views %>
+                            <img src="/manga/image/<%= Buffer.from(item.imageUrl).toString('base64') %>"
+                                alt="<%= item.title %>"
+                                class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110"
+                                onerror="this.onerror=null; this.src='<%= item.imageUrl %>';">
+                            <div
+                                class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                             </div>
+                            <% if (item.stats && item.stats.views) { %>
+                                <div
+                                    class="absolute top-3 right-3 bg-black/80 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm border border-white/10">
+                                    <%= item.stats.views %>
+                                </div>
+                                <% } %>
                         </div>
                         <div class="p-4">
-                            <h3 class="text-white font-semibold text-sm line-clamp-2 mb-2 group-hover:text-purple-400 transition-colors"><%= item.title %></h3>
+                            <h3
+                                class="text-white font-semibold text-sm line-clamp-2 mb-2 group-hover:text-purple-400 transition-colors">
+                                <%= item.title %>
+                            </h3>
                             <div class="flex justify-between items-center">
-                                <span class="text-gray-400 text-xs bg-primary-700/50 px-2 py-1 rounded-full"><%= item.type || category %></span>
+                                <span class="text-gray-400 text-xs bg-primary-700/50 px-2 py-1 rounded-full">
+                                    <%= item.type || category %>
+                                </span>
                                 <% if (item.latestChapter && item.latestChapter.url) { %>
-                                    <a href="/chapter<%= new URL(item.latestChapter.url).pathname %>" 
-                                       class="text-xs text-purple-400 hover:text-purple-300 transition-colors">
+                                    <a href="/chapter<%= new URL(item.latestChapter.url).pathname %>"
+                                        class="text-xs text-purple-400 hover:text-purple-300 transition-colors">
                                         <%= item.latestChapter.title %>
                                     </a>
-                                <% } %>
+                                    <% } %>
                             </div>
                         </div>
                     </a>
                 </div>
-            <% }); %>
+                <% }); %>
         </div>
-        
+
         <!-- Pagination -->
         <div class="flex justify-center mt-12">
-            <div class="flex items-center space-x-2 bg-primary-800/50 backdrop-blur-sm rounded-xl p-1.5 border border-purple-500/20">
-                <a href="/popular?category=<%= category %>&page=<%= pagination.currentPage > 1 ? pagination.currentPage - 1 : 1 %>" 
-                   class="p-2 text-gray-400 hover:text-white hover:bg-primary-700/50 rounded-lg transition-all">
+            <div
+                class="flex items-center space-x-2 bg-primary-800/50 backdrop-blur-sm rounded-xl p-1.5 border border-purple-500/20">
+                <a href="/popular?category=<%= category %>&sorttime=<%= sorttime %>&page=<%= pagination.currentPage > 1 ? pagination.currentPage - 1 : 1 %>"
+                    class="p-2 text-gray-400 hover:text-white hover:bg-primary-700/50 rounded-lg transition-all <%= pagination.currentPage <= 1 ? 'opacity-50 pointer-events-none' : '' %>">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                     </svg>
                 </a>
-                
+
                 <span class="px-4 py-1 text-sm text-gray-300 bg-primary-700/50 rounded-lg">
                     Page <%= pagination.currentPage %>
                 </span>
-                
-                <a href="/popular?category=<%= category %>&page=<%= pagination.currentPage + 1 %>" 
-                   class="p-2 text-gray-400 hover:text-white hover:bg-primary-700/50 rounded-lg transition-all">
+
+                <a href="/popular?category=<%= category %>&sorttime=<%= sorttime %>&page=<%= pagination.currentPage + 1 %>"
+                    class="p-2 text-gray-400 hover:text-white hover:bg-primary-700/50 rounded-lg transition-all <%= !pagination.hasNextPage ? 'opacity-50 pointer-events-none' : '' %>">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                     </svg>
@@ -75,9 +107,9 @@
 
 <script>
     // Add staggered animation to grid items
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const gridItems = document.querySelectorAll('.grid > div');
-        
+
         gridItems.forEach((item, index) => {
             item.style.setProperty('--animation-order', index + 1);
             item.style.animation = `fadeIn 0.5s ease-out forwards`;
@@ -90,7 +122,14 @@
 <style>
     /* Add some cool animations */
     @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
-</style> 
+</style>
