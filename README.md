@@ -126,9 +126,9 @@ Komikkuya dilengkapi dengan fitur SEO lengkap untuk mendukung indexing di search
 
 ## API Source
 
-Komikkuya menggunakan API dari:
+Komikkuya menggunakan API yang dikembangkan oleh [ItzApipAjalah](https://github.com/ItzApipAjalah):
 - [Komiku API](https://komiku-api-self.vercel.app) - Manga, manhwa, manhua
-- Custom API - Doujin dan nhentai content
+- Custom API - Doujin dan nhentai content (dikembangkan oleh [afifmedya.my.id](https://www.afifmedya.my.id/))
 
 ---
 
@@ -165,8 +165,9 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## Contact
 
-- Website: [komikkuya.my.id](https://komikkuya.my.id)
+- Website: [afifmedya.my.id](https://www.afifmedya.my.id/)
 - GitHub: [@ItzApipAjalah](https://github.com/ItzApipAjalah)
+- App URL: [komikkuya.my.id](https://komikkuya.my.id)
 
 ---
 
