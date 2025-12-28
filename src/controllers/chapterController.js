@@ -39,7 +39,7 @@ const chapterController = {
             res.render('manga/chapter', {
                 title: `${data.title} - ${data.mangaTitle} | Baca Gratis Komikkuya`,
                 metaDescription: `Baca ${data.title} dari ${data.mangaTitle} gratis online di Komikkuya. Tanpa iklan, loading cepat!`,
-                metaKeywords: `${data.mangaTitle}, ${data.title}, baca ${data.mangaTitle} gratis, chapter ${currentChapterNumber}`,
+                metaKeywords: `${data.mangaTitle}, ${data.title}, baca ${data.mangaTitle} gratis, chapter ${currentChapterNumber}, read ${data.mangaTitle} online, ${data.mangaTitle} chapter terbaru, baca chapter ${currentChapterNumber}, ${data.mangaTitle} bahasa indonesia, ${data.mangaTitle} sub indo, komikkuya`,
                 canonicalUrl: `https://komikkuya.my.id/chapter/${cleanUrl}`,
                 currentPath: `/chapter/${cleanUrl}`,
                 breadcrumbs: [

@@ -63,7 +63,7 @@ const popularController = {
             res.render('popular/index', {
                 title: `${categoryDisplay} Populer - Baca Komik Gratis Online | Komikkuya`,
                 metaDescription: `Baca ${categoryDisplay} populer gratis online di Komikkuya. Koleksi ${categoryDisplay} terbaik dan terpopuler tanpa iklan!`,
-                metaKeywords: `${categoryDisplay} populer, ${validCategory} terpopuler, baca ${validCategory} gratis, ${validCategory} terbaik, komikkuya`,
+                metaKeywords: `${categoryDisplay} populer, ${validCategory} terpopuler, baca ${validCategory} gratis, ${validCategory} terbaik, trending ${validCategory}, top ${validCategory}, best ${validCategory}, ${validCategory} ranking, ${validCategory} favorit, ${validCategory} rekomendasi, komikkuya populer, ${validCategory} paling banyak dibaca`,
                 canonicalUrl: `https://komikkuya.my.id/popular?category=${validCategory}`,
                 currentPath: `/popular?category=${validCategory}`,
                 items: processedItems,

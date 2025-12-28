@@ -52,7 +52,7 @@ class LatestController {
             return res.render('latest/index', {
                 title: `${categoryDisplay} Terbaru - Update Komik Hari Ini | Komikkuya`,
                 metaDescription: `Baca ${categoryDisplay} terbaru update hari ini gratis di Komikkuya. Chapter terbaru ${categoryDisplay} tanpa iklan!`,
-                metaKeywords: `${categoryDisplay} terbaru, update ${validCategory}, ${validCategory} chapter terbaru, baca ${validCategory} gratis, komikkuya`,
+                metaKeywords: `${categoryDisplay} terbaru, update ${validCategory}, ${validCategory} chapter terbaru, baca ${validCategory} gratis, ${validCategory} update hari ini, ${validCategory} rilis terbaru, ${validCategory} chapter baru, new chapter ${validCategory}, latest ${validCategory}, komikkuya update, ${validCategory} 2025, ${validCategory} 2026`,
                 canonicalUrl: `https://komikkuya.my.id/latest?category=${validCategory}`,
                 currentPath: `/latest?category=${validCategory}`,
                 mangaList: processedItems,

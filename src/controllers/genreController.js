@@ -31,7 +31,7 @@ class GenreController {
                     return res.render('genre/index', {
                         title: 'Semua Genre Komik - Baca Manga, Manhwa, Manhua Gratis | Komikkuya',
                         metaDescription: 'Jelajahi semua genre komik di Komikkuya. Baca manga, manhwa, dan manhua favoritmu gratis tanpa iklan!',
-                        metaKeywords: 'genre komik, genre manga, manhwa genre, manhua genre, baca komik gratis, komikkuya genre',
+                        metaKeywords: 'genre komik, genre manga, manhwa genre, manhua genre, baca komik gratis, komikkuya genre, komik romantis, komik action, komik fantasi, komik isekai, komik adventure, komik horror, komik comedy, komik slice of life, komik drama, komik school life, komik martial arts, komik cultivation, komik reinkarnasi, komik harem, komik seinen, komik shounen, daftar genre manga, pilih genre manhwa',
                         canonicalUrl: 'https://komikkuya.my.id/genre',
                         currentPath: '/genre',
                         genres: data.data,

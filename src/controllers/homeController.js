@@ -46,7 +46,7 @@ class HomeController {
             return res.render('index', {
                 title: 'Komikkuya - Baca & Read Komik Gratis Online | Manga, Manhwa, Manhua Chapter Terbaru',
                 metaDescription: 'Baca komik gratis online di Komikkuya! Read manga chapter terbaru, genres lengkap: aksi, fantasi, romantis. Koleksi manga, manhwa, manhua update setiap hari tanpa iklan!',
-                metaKeywords: 'baca komik gratis, manga online, manhwa indonesia, manhua terbaru, komik lengkap, baca manga gratis, baca manhwa gratis, webtoon indonesia, read manga, chapter terbaru, genres komik, aksi, fantasi, romantis, isekai, solo leveling, one piece, naruto, demon slayer, jujutsu kaisen, attack on titan, blue lock, chainsaw man, spy x family, manga terbaru 2025, manhwa terbaru 2025, manga terbaru 2026, komikkuya, komik online gratis, baca komik tanpa iklan',
+                metaKeywords: 'baca komik gratis, manga online, manhwa indonesia, manhua terbaru, komik lengkap, baca manga gratis, baca manhwa gratis, read manga online, read manhwa free, chapter terbaru, update chapter, genre komik, komik romantis, komik action, komik fantasi, komik isekai, komik populer, trending manga, trending manhwa, solo leveling, one piece, naruto, demon slayer, jujutsu kaisen, attack on titan, blue lock, chainsaw man, spy x family, tower of god, lookism, manga terbaru 2025, manhwa terbaru 2025, manga terbaru 2026, komikkuya, komik online gratis, baca komik tanpa iklan, webtoon indonesia',
                 canonicalUrl: 'https://komikkuya.my.id/',
                 currentPath: '/',
                 recommendations: processedItems,

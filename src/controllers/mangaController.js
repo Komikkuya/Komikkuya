@@ -35,7 +35,7 @@ const mangaController = {
             return res.render('manga/detail', {
                 title: `${data.title} - Baca Komik Gratis | Komikkuya`,
                 metaDescription: truncatedDesc,
-                metaKeywords: `${data.title}, ${(data.genres || []).join(', ')}, baca ${data.title} gratis, manga ${data.title}, komik ${data.title}`,
+                metaKeywords: `${data.title}, ${(data.genres || []).join(', ')}, baca ${data.title} gratis, manga ${data.title}, komik ${data.title}, read ${data.title} online, ${data.title} bahasa indonesia, ${data.title} sub indo, ${data.title} chapter lengkap, ${data.title} full chapter, download ${data.title}, sinopsis ${data.title}, komikkuya`,
                 ogImage: data.coverImage,
                 ogType: 'book',
                 canonicalUrl: `https://komikkuya.my.id/manga/${slug}`,
