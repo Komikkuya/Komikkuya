@@ -72,3 +72,4 @@ class NhentaiController {
 }
 
 module.exports = new NhentaiController();
+

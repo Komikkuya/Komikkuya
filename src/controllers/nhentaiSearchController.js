@@ -61,3 +61,4 @@ const nhentaiSearchController = {
 };
 
 module.exports = nhentaiSearchController;
+

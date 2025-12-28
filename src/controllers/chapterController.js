@@ -40,7 +40,7 @@ const chapterController = {
                 title: `${data.title} - ${data.mangaTitle} | Baca Gratis Komikkuya`,
                 metaDescription: `Baca ${data.title} dari ${data.mangaTitle} gratis online di Komikkuya. Tanpa iklan, loading cepat!`,
                 metaKeywords: `${data.mangaTitle}, ${data.title}, baca ${data.mangaTitle} gratis, chapter ${currentChapterNumber}`,
-                canonicalUrl: `https://komikkuya.com/chapter/${cleanUrl}`,
+                canonicalUrl: `https://komikkuya.my.id/chapter/${cleanUrl}`,
                 currentPath: `/chapter/${cleanUrl}`,
                 chapter: data,
                 navigation: {

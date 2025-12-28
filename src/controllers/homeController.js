@@ -47,7 +47,7 @@ class HomeController {
                 title: 'Komikkuya - Baca Komik Gratis Online | Manga, Manhwa, Manhua Lengkap',
                 metaDescription: 'Baca komik gratis online di Komikkuya! Koleksi lengkap manga, manhwa, dan manhua terbaru tanpa iklan. Update setiap hari dengan chapter terbaru!',
                 metaKeywords: 'baca komik gratis, manga online, manhwa indonesia, manhua terbaru, komik lengkap, baca manga gratis, komikkuya, webtoon, novel grafis, komik terbaru, baca manhwa gratis',
-                canonicalUrl: 'https://komikkuya.com/',
+                canonicalUrl: 'https://komikkuya.my.id/',
                 currentPath: '/',
                 recommendations: processedItems,
                 genres: topGenres

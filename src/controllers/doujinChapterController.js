@@ -60,3 +60,4 @@ const DoujinChapterController = {
 };
 
 module.exports = DoujinChapterController;
+

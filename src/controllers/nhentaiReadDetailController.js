@@ -60,3 +60,4 @@ const nhentaiReadDetailController = {
 };
 
 module.exports = nhentaiReadDetailController;
+

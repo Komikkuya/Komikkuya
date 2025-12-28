@@ -5,3 +5,4 @@ const nhentaiReadDetailController = require('../controllers/nhentaiReadDetailCon
 router.get('/g/:galleryId/:page', nhentaiReadDetailController.detail);
 
 module.exports = router;
+

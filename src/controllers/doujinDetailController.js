@@ -65,3 +65,4 @@ const doujinDetailController = {
 };
 
 module.exports = doujinDetailController;
+

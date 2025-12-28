@@ -29,7 +29,7 @@ const mangaController = {
                 "genre": data.genres || [],
                 "inLanguage": "id-ID",
                 "image": data.coverImage,
-                "url": `https://komikkuya.com/manga/${slug}`
+                "url": `https://komikkuya.my.id/manga/${slug}`
             };
 
             return res.render('manga/detail', {
@@ -38,7 +38,7 @@ const mangaController = {
                 metaKeywords: `${data.title}, ${(data.genres || []).join(', ')}, baca ${data.title} gratis, manga ${data.title}, komik ${data.title}`,
                 ogImage: data.coverImage,
                 ogType: 'book',
-                canonicalUrl: `https://komikkuya.com/manga/${slug}`,
+                canonicalUrl: `https://komikkuya.my.id/manga/${slug}`,
                 currentPath: `/manga/${slug}`,
                 jsonLd: jsonLd,
                 manga: data

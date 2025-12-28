@@ -17,7 +17,7 @@
     <meta name="robots" content="index, follow">
     <meta name="googlebot" content="index, follow">
     <link rel="canonical"
-        href="<%= typeof canonicalUrl !== 'undefined' ? canonicalUrl : 'https://komikkuya.com' + (typeof currentPath !== 'undefined' ? currentPath : '') %>">
+        href="<%= typeof canonicalUrl !== 'undefined' ? canonicalUrl : 'https://komikkuya.my.id' + (typeof currentPath !== 'undefined' ? currentPath : '') %>">
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="/assets/favicon.png">
@@ -26,7 +26,7 @@
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="<%= typeof ogType !== 'undefined' ? ogType : 'website' %>">
     <meta property="og:url"
-        content="<%= typeof canonicalUrl !== 'undefined' ? canonicalUrl : 'https://komikkuya.com' %>">
+        content="<%= typeof canonicalUrl !== 'undefined' ? canonicalUrl : 'https://komikkuya.my.id' %>">
     <meta property="og:title" content="<%= title %>">
     <meta property="og:description"
         content="<%= typeof metaDescription !== 'undefined' ? metaDescription : 'Baca komik gratis online di Komikkuya! Koleksi lengkap manga, manhwa, dan manhua terbaru tanpa iklan.' %>">
@@ -39,7 +39,7 @@
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url"
-        content="<%= typeof canonicalUrl !== 'undefined' ? canonicalUrl : 'https://komikkuya.com' %>">
+        content="<%= typeof canonicalUrl !== 'undefined' ? canonicalUrl : 'https://komikkuya.my.id' %>">
     <meta name="twitter:title" content="<%= title %>">
     <meta name="twitter:description"
         content="<%= typeof metaDescription !== 'undefined' ? metaDescription : 'Baca komik gratis online di Komikkuya! Koleksi lengkap manga, manhwa, dan manhua terbaru tanpa iklan.' %>">
@@ -52,14 +52,14 @@
         "@type": "WebSite",
         "name": "Komikkuya",
         "alternateName": ["Komikkuya Indonesia", "Baca Komik Gratis"],
-        "url": "https://komikkuya.com",
+        "url": "https://komikkuya.my.id",
         "description": "Baca komik gratis online - manga, manhwa, dan manhua terbaru tanpa iklan",
         "inLanguage": "id-ID",
         "potentialAction": {
             "@type": "SearchAction",
             "target": {
                 "@type": "EntryPoint",
-                "urlTemplate": "https://komikkuya.com/api/search?query={search_term_string}"
+                "urlTemplate": "https://komikkuya.my.id/api/search?query={search_term_string}"
             },
             "query-input": "required name=search_term_string"
         }

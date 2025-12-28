@@ -5,7 +5,7 @@ const router = express.Router();
 // Sitemap.xml route
 router.get('/sitemap.xml', async (req, res) => {
     try {
-        const baseUrl = 'https://komikkuya.com';
+        const baseUrl = 'https://komikkuya.my.id';
         const now = new Date().toISOString();
 
         // Static pages
@@ -143,3 +143,4 @@ router.get('/sitemap.xml', async (req, res) => {
 });
 
 module.exports = router;
+

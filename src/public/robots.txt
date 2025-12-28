@@ -3,7 +3,8 @@ Allow: /
 Disallow: /api/
 
 # Sitemap
-Sitemap: https://komikkuya.com/sitemap.xml
+Sitemap: https://komikkuya.my.id/sitemap.xml
 
 # Crawl-delay (optional, untuk mengurangi beban server)
 Crawl-delay: 1
+

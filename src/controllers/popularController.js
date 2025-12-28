@@ -64,7 +64,7 @@ const popularController = {
                 title: `${categoryDisplay} Populer - Baca Komik Gratis Online | Komikkuya`,
                 metaDescription: `Baca ${categoryDisplay} populer gratis online di Komikkuya. Koleksi ${categoryDisplay} terbaik dan terpopuler tanpa iklan!`,
                 metaKeywords: `${categoryDisplay} populer, ${validCategory} terpopuler, baca ${validCategory} gratis, ${validCategory} terbaik, komikkuya`,
-                canonicalUrl: `https://komikkuya.com/popular?category=${validCategory}`,
+                canonicalUrl: `https://komikkuya.my.id/popular?category=${validCategory}`,
                 currentPath: `/popular?category=${validCategory}`,
                 items: processedItems,
                 category: validCategory,

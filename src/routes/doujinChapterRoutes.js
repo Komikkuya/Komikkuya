@@ -5,3 +5,4 @@ const DoujinChapterController = require("../controllers/doujinChapterController"
 router.get("/chapter/:slug", DoujinChapterController.read);
 
 module.exports = router;
+

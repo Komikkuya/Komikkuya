@@ -74,3 +74,4 @@ class DoujinController {
 }
 
 module.exports = new DoujinController();
+
