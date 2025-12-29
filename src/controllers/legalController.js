@@ -11,6 +11,10 @@ const DISCORD_WEBHOOKS = [
 const rateLimitStore = new Map();
 const RATE_LIMIT_DURATION = 60 * 60 * 1000; // 1 hour in milliseconds
 
+// VPN/Proxy check cache (to avoid repeated API calls)
+const vpnCheckCache = new Map();
+const VPN_CACHE_DURATION = 10 * 60 * 1000; // Cache VPN check for 10 minutes
+
 // Get client IP address (supports Vercel/proxies)
 function getClientIP(req) {
     // Vercel uses x-forwarded-for
@@ -46,6 +50,43 @@ function getRateLimitRemaining(ip) {
     return Math.ceil(remaining / 60000); // Convert to minutes
 }
 
+// Check if IP is VPN/Proxy using ip-api.com (free, no API key needed)
+async function isVPNorProxy(ip) {
+    // Skip check for localhost/private IPs
+    if (ip === 'unknown' || ip === '127.0.0.1' || ip === '::1' || ip.startsWith('192.168.') || ip.startsWith('10.')) {
+        return { isVPN: false, cached: false };
+    }
+
+    // Check cache first
+    const cached = vpnCheckCache.get(ip);
+    if (cached && (Date.now() - cached.timestamp) < VPN_CACHE_DURATION) {
+        return { isVPN: cached.isVPN, cached: true };
+    }
+
+    try {
+        // ip-api.com with proxy field (free tier, 45 requests/minute)
+        const response = await fetch(`http://ip-api.com/json/${ip}?fields=status,proxy,hosting`);
+        const data = await response.json();
+
+        if (data.status === 'success') {
+            const isVPN = data.proxy === true || data.hosting === true;
+
+            // Cache the result
+            vpnCheckCache.set(ip, {
+                isVPN: isVPN,
+                timestamp: Date.now()
+            });
+
+            return { isVPN: isVPN, cached: false };
+        }
+    } catch (error) {
+        console.error('VPN check error:', error);
+    }
+
+    // If check fails, allow the request (fail open)
+    return { isVPN: false, cached: false };
+}
+
 const legalController = {
     terms: (req, res) => {
         res.render('legal/terms', {
@@ -65,17 +106,21 @@ const legalController = {
         });
     },
 
-    contact: (req, res) => {
+    contact: async (req, res) => {
         const clientIP = getClientIP(req);
         const isLimited = isRateLimited(clientIP);
         const remainingMinutes = getRateLimitRemaining(clientIP);
+
+        // Check VPN/Proxy
+        const vpnCheck = await isVPNorProxy(clientIP);
 
         res.render('legal/contact', {
             title: 'Contact Us - Komikkuya',
             success: req.query.success === 'true',
             error: req.query.error,
             isRateLimited: isLimited,
-            remainingMinutes: remainingMinutes
+            remainingMinutes: remainingMinutes,
+            isVPN: vpnCheck.isVPN
         });
     },
 
@@ -83,6 +128,12 @@ const legalController = {
     submitContact: async (req, res) => {
         try {
             const clientIP = getClientIP(req);
+
+            // Check VPN/Proxy first
+            const vpnCheck = await isVPNorProxy(clientIP);
+            if (vpnCheck.isVPN) {
+                return res.redirect('/contact?error=VPN/Proxy detected. Please disable your VPN/Proxy and try again.');
+            }
 
             // Check rate limit
             if (isRateLimited(clientIP)) {
