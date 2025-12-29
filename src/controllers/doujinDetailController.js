@@ -1,6 +1,5 @@
-const fetch = require('node-fetch');
+const { fetchJsonWithFallback } = require("../utils/apiFetch");
 
-const API_BASE = "https://komiku-api-self.vercel.app";
 const DOUJIN_SITE = "https://komikdewasa.id";
 
 const doujinDetailController = {
@@ -10,65 +9,56 @@ const doujinDetailController = {
 
             if (!slug) {
                 return res.status(400).render('error', {
-                    title: 'Invalid Request - Komikkuya',
-                    error: 'Slug tidak ditemukan'
+                    title: 'Error - Komikkuya',
+                    error: 'Doujin slug is required'
                 });
             }
 
-            // Build URL for the API
+            // Build URL for the API with fallback
             const doujinUrl = `${DOUJIN_SITE}/komik/${slug}/`;
-            const apiUrl = `${API_BASE}/api/doujin/detail?url=${encodeURIComponent(doujinUrl)}`;
-
-            const response = await fetch(apiUrl, {
-                headers: {
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-                    "Accept": "application/json"
-                }
-            });
-
-            const json = await response.json();
+            const json = await fetchJsonWithFallback(`/api/doujin/detail?url=${encodeURIComponent(doujinUrl)}`);
 
             if (!json.success || !json.data) {
                 return res.status(404).render('error', {
-                    title: 'Not Found - Komikkuya',
-                    error: 'Doujin tidak ditemukan'
+                    title: 'Doujin Not Found - Komikkuya',
+                    error: 'Unable to load doujin details.'
                 });
             }
 
             const data = json.data;
 
+            // Map chapters
+            const chapters = (data.chapters || []).map(ch => ({
+                title: ch.title || 'Chapter',
+                slug: ch.slug || '',
+                number: ch.number || 0,
+                url: ch.url || ''
+            }));
+
             const doujin = {
-                title: data.title || "Untitled",
-                slug: data.slug || slug,
-                cover: data.cover || "/images/placeholder.jpg",
-                type: data.type || "Unknown",
-                status: data.status || "Unknown",
-                author: data.author || "Unknown",
-                lastUpdate: data.lastUpdate || "-",
+                title: data.title || 'Untitled',
+                cover: data.cover || '/images/placeholder.jpg',
+                description: data.description || '',
+                type: data.type || 'Doujin',
+                status: data.status || 'Unknown',
+                author: data.author || 'Unknown',
                 genres: data.genres || [],
-                description: data.description || "No description available.",
-                url: data.url || "",
-                totalChapters: data.totalChapters || 0,
-                chapters: (data.chapters || []).map(ch => ({
-                    number: ch.number || "",
-                    title: ch.title || "",
-                    slug: ch.slug || "",
-                    url: ch.url || ""
-                }))
+                chapters: chapters,
+                totalChapters: chapters.length,
+                lastUpdate: data.lastUpdate || '-'
             };
 
             return res.render('doujin/detail', {
                 title: `${doujin.title} - Komikkuya`,
-                metaDescription: `Baca ${doujin.title} di Komikkuya. ${doujin.description.substring(0, 150)}...`,
+                metaDescription: `Baca ${doujin.title} di Komikkuya. Komik dewasa gratis tanpa iklan.`,
                 doujin
             });
 
         } catch (error) {
-            console.error('Error fetching doujin details:', error);
-
+            console.error('DoujinDetailController Error:', error);
             return res.status(500).render('error', {
                 title: 'Error - Komikkuya',
-                error: 'Failed to load doujin details'
+                error: 'Failed to load doujin details.'
             });
         }
     }

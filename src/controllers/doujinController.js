@@ -1,4 +1,4 @@
-const fetch = require("node-fetch");
+const { fetchJsonWithFallback } = require("../utils/apiFetch");
 
 const API_BASE = "https://komiku-api-self.vercel.app";
 
@@ -7,16 +7,8 @@ class DoujinController {
         try {
             const pageNumber = Number(req.query.page) || 1;
 
-            const apiUrl = `${API_BASE}/api/doujin/last-update?page=${pageNumber}`;
-
-            const result = await fetch(apiUrl, {
-                headers: {
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-                    "Accept": "application/json"
-                }
-            });
-
-            const json = await result.json();
+            // Use fetchJsonWithFallback for automatic fallback
+            const json = await fetchJsonWithFallback(`/api/doujin/last-update?page=${pageNumber}`);
 
             if (!json.success || !json.data) {
                 return res.status(500).render("error", {

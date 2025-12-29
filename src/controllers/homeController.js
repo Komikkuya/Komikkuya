@@ -1,29 +1,18 @@
-const fetch = require('node-fetch');
+const { fetchJsonWithFallback } = require('../utils/apiFetch');
 
 class HomeController {
     async index(req, res) {
         try {
             // Fetch all data in parallel for better performance
-            const [recommendationsRes, genresRes, hotRes, latestRes, popularDailyRes, popularWeeklyRes, popularAllRes] = await Promise.all([
-                fetch('https://komiku-api-self.vercel.app/api/recommendations'),
-                fetch('https://komiku-api-self.vercel.app/api/genres'),
-                fetch('https://komiku-api-self.vercel.app/api/hot?page=1'),
-                fetch('https://komiku-api-self.vercel.app/api/last-update?category=manga&page=1'),
-                fetch('https://komiku-api-self.vercel.app/api/popular?category=manga&page=1&sorttime=daily'),
-                fetch('https://komiku-api-self.vercel.app/api/popular?category=manga&page=1&sorttime=weekly'),
-                fetch('https://komiku-api-self.vercel.app/api/popular?category=manga&page=1&sorttime=all')
-            ]);
-
             const [recommendationsData, genresData, hotData, latestData, popularDailyData, popularWeeklyData, popularAllData] = await Promise.all([
-                recommendationsRes.json(),
-                genresRes.json(),
-                hotRes.json(),
-                latestRes.json(),
-                popularDailyRes.json(),
-                popularWeeklyRes.json(),
-                popularAllRes.json()
+                fetchJsonWithFallback('/api/recommendations'),
+                fetchJsonWithFallback('/api/genres'),
+                fetchJsonWithFallback('/api/hot?page=1'),
+                fetchJsonWithFallback('/api/last-update?category=manga&page=1'),
+                fetchJsonWithFallback('/api/popular?category=manga&page=1&sorttime=daily'),
+                fetchJsonWithFallback('/api/popular?category=manga&page=1&sorttime=weekly'),
+                fetchJsonWithFallback('/api/popular?category=manga&page=1&sorttime=all')
             ]);
-
 
             if (!recommendationsData.success) {
                 return res.status(500).render('error', {
@@ -107,4 +96,4 @@ class HomeController {
     }
 }
 
-module.exports = new HomeController(); 
+module.exports = new HomeController();

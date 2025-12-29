@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+const { fetchWithFallback, fetchJsonWithFallback } = require('../utils/apiFetch');
 
 class LatestController {
     async index(req, res) {
@@ -11,9 +11,8 @@ class LatestController {
             const validCategories = ['manga', 'manhwa', 'manhua'];
             const validCategory = validCategories.includes(category) ? category : 'manga';
 
-            // Fetch latest manga from API
-            const response = await fetch(`https://komiku-api-self.vercel.app/api/last-update?category=${validCategory}&page=${page}`);
-            const data = await response.json();
+            // Fetch latest manga from API with fallback
+            const data = await fetchJsonWithFallback(`/api/last-update?category=${validCategory}&page=${page}`);
 
             if (!data.success) {
                 return res.status(500).render('error', {
@@ -70,4 +69,4 @@ class LatestController {
     }
 }
 
-module.exports = new LatestController(); 
+module.exports = new LatestController();

@@ -1,3 +1,4 @@
+const { fetchWithFallback } = require('../utils/apiFetch');
 const fetch = require('node-fetch');
 
 /**
@@ -16,10 +17,10 @@ const searchController = {
                 return res.json({ success: true, data: [] });
             }
 
-            // Fetch from all endpoints in parallel
+            // Fetch from all endpoints in parallel with fallback for komiku API
             const [komikuResponse, asiaResponse, internationalResponse] = await Promise.allSettled([
-                fetch(`https://komiku-api-self.vercel.app/api/search?query=${encodeURIComponent(query)}`),
-                fetch(`https://komiku-api-self.vercel.app/api/asia/search?q=${encodeURIComponent(query)}`),
+                fetchWithFallback(`/api/search?query=${encodeURIComponent(query)}`),
+                fetchWithFallback(`/api/asia/search?q=${encodeURIComponent(query)}`),
                 fetch(`https://international.komikkuya.my.id/api/international/search?q=${encodeURIComponent(query)}`)
             ]);
 

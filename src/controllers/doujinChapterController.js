@@ -1,6 +1,5 @@
-const fetch = require("node-fetch");
+const { fetchJsonWithFallback } = require("../utils/apiFetch");
 
-const API_BASE = "https://komiku-api-self.vercel.app";
 const DOUJIN_SITE = "https://komikdewasa.id";
 
 const DoujinChapterController = {
@@ -16,24 +15,18 @@ const DoujinChapterController = {
                 });
             }
 
-            let apiUrl;
+            let apiPath;
             if (server === '2') {
                 // Server 2: /api/doujin/v2/chapter?slug=SLUG
-                apiUrl = `https://international.komikkuya.my.id/api/doujin/v2/chapter?slug=${slug}`;
+                apiPath = `/api/doujin/v2/chapter?slug=${slug}`;
             } else {
                 // Server 1: /api/doujin/chapter?url=URL (default)
                 const chapterUrl = `${DOUJIN_SITE}/baca/${slug}/`;
-                apiUrl = `${API_BASE}/api/doujin/chapter?url=${encodeURIComponent(chapterUrl)}`;
+                apiPath = `/api/doujin/chapter?url=${encodeURIComponent(chapterUrl)}`;
             }
 
-            const response = await fetch(apiUrl, {
-                headers: {
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-                    "Accept": "application/json"
-                }
-            });
-
-            const json = await response.json();
+            // Use fetchJsonWithFallback for automatic fallback
+            const json = await fetchJsonWithFallback(apiPath);
 
             if (!json.success || !json.data) {
                 return res.status(404).render("error", {

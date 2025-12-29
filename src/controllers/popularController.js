@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+const { fetchWithFallback, fetchJsonWithFallback } = require('../utils/apiFetch');
 
 const popularController = {
     index: async (req, res) => {
@@ -13,14 +13,8 @@ const popularController = {
             const validSorttimes = ['daily', 'weekly', 'all'];
             const validSorttime = validSorttimes.includes(sorttime) ? sorttime : 'all';
 
-            // Fetch popular data from API with sorttime
-            const response = await fetch(`https://komiku-api-self.vercel.app/api/popular?category=${validCategory}&page=${page}&sorttime=${validSorttime}`);
-
-            if (!response.ok) {
-                throw new Error(`API responded with status: ${response.status}`);
-            }
-
-            const result = await response.json();
+            // Fetch popular data from API with fallback
+            const result = await fetchJsonWithFallback(`/api/popular?category=${validCategory}&page=${page}&sorttime=${validSorttime}`);
 
             if (!result.success || !result.data || !result.data.mangaList) {
                 return res.status(404).render('error', {
@@ -94,4 +88,4 @@ const popularController = {
     }
 };
 
-module.exports = popularController; 
+module.exports = popularController;

@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+const { fetchJsonWithFallback } = require('../utils/apiFetch');
 
 class GenreController {
     async index(req, res) {
@@ -8,8 +8,7 @@ class GenreController {
             // If no genre is specified, fetch all genres
             if (!genre) {
                 try {
-                    const response = await fetch('https://komiku-api-self.vercel.app/api/genres');
-                    const data = await response.json();
+                    const data = await fetchJsonWithFallback('/api/genres');
 
                     if (!data.success) {
                         return res.render('genre/index', {
@@ -69,24 +68,22 @@ class GenreController {
             let genreData;
             let error = null;
             try {
-                const response = await fetch(`https://komiku-api-self.vercel.app/api/genre?genre=${genre}&category=${category}&page=${page}`);
-                genreData = await response.json();
+                genreData = await fetchJsonWithFallback(`/api/genre?genre=${genre}&category=${category}&page=${page}`);
 
                 if (!genreData.success) {
                     error = 'Failed to fetch manga for this genre. Please try again later.';
                 }
-            } catch (error) {
-                console.error('Error fetching genre manga:', error);
+            } catch (err) {
+                console.error('Error fetching genre manga:', err);
                 error = 'Failed to fetch manga for this genre. Please try again later.';
             }
 
             // Fetch all genres for the sidebar
             let genresData = { success: false, data: [] };
             try {
-                const genresResponse = await fetch('https://komiku-api-self.vercel.app/api/genres');
-                genresData = await genresResponse.json();
-            } catch (error) {
-                console.error('Error fetching genres list:', error);
+                genresData = await fetchJsonWithFallback('/api/genres');
+            } catch (err) {
+                console.error('Error fetching genres list:', err);
                 // Continue with empty genres list
             }
 
@@ -144,4 +141,4 @@ class GenreController {
     }
 }
 
-module.exports = new GenreController(); 
+module.exports = new GenreController();

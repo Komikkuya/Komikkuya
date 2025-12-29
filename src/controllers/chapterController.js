@@ -1,3 +1,4 @@
+const { fetchWithFallback, fetchJsonWithFallback } = require('../utils/apiFetch');
 const fetch = require('node-fetch');
 
 /**
@@ -66,10 +67,9 @@ const chapterController = {
                     };
                 }
             } else if (isAsiaChapter) {
-                // Asia API (westmanga.me)
+                // Asia API (westmanga.me) with fallback
                 const asiaUrl = `https://westmanga.me/${cleanUrl}`;
-                const response = await fetch(`https://komiku-api-self.vercel.app/api/asia/chapter?url=${encodeURIComponent(asiaUrl)}`);
-                const asiaData = await response.json();
+                const asiaData = await fetchJsonWithFallback(`/api/asia/chapter?url=${encodeURIComponent(asiaUrl)}`);
 
                 if (asiaData.success && asiaData.data) {
                     sourceType = 'asia';
@@ -100,11 +100,10 @@ const chapterController = {
                 }
             }
 
-            // If not International or Asia, or if those failed, try Komiku API
+            // If not International or Asia, or if those failed, try Komiku API with fallback
             if (!data) {
                 const fullUrl = `https://komiku.id/${cleanUrl}`;
-                const response = await fetch(`https://komiku-api-self.vercel.app/api/chapter?url=${encodeURIComponent(fullUrl)}`);
-                data = await response.json();
+                data = await fetchJsonWithFallback(`/api/chapter?url=${encodeURIComponent(fullUrl)}`);
                 sourceType = 'komiku';
             }
 

@@ -1,3 +1,4 @@
+const { fetchWithFallback, fetchJsonWithFallback } = require('../utils/apiFetch');
 const fetch = require('node-fetch');
 const path = require('path');
 const fs = require('fs');
@@ -14,18 +15,16 @@ const mangaController = {
         try {
             const { slug } = req.params;
 
-            // First try Komiku API
+            // First try Komiku API with fallback
             const komikuUrl = `https://komiku.id/manga/${slug}/`;
-            let response = await fetch(`https://komiku-api-self.vercel.app/api/manga?url=${encodeURIComponent(komikuUrl)}`);
-            let data = await response.json();
+            let data = await fetchJsonWithFallback(`/api/manga?url=${encodeURIComponent(komikuUrl)}`);
 
             // Check if Komiku API returned valid data
             let sourceType = 'komiku';
             if (!data || !data.title || data.error) {
-                // Try Asia API
+                // Try Asia API with fallback
                 const asiaUrl = `https://westmanga.me/comic/${slug}`;
-                response = await fetch(`https://komiku-api-self.vercel.app/api/asia/detail?url=${encodeURIComponent(asiaUrl)}`);
-                const asiaData = await response.json();
+                const asiaData = await fetchJsonWithFallback(`/api/asia/detail?url=${encodeURIComponent(asiaUrl)}`);
 
                 if (asiaData.success && asiaData.data && asiaData.data.title) {
                     sourceType = 'asia';
