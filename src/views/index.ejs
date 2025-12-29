@@ -48,6 +48,7 @@
     </div>
 </div>
 
+
 <div class="space-y-12">
 
     <!-- Hero Section -->
@@ -94,36 +95,81 @@
                     </div>
         </div>
     </section>
-    <!-- Server Info Alert -->
-    <div id="serverAlert"
-        class="bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30 rounded-xl p-4 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-            <div class="flex-shrink-0">
-                <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+
+    <!-- Alert Banners -->
+    <div class="space-y-2">
+        <!-- Server Info Alert -->
+        <div id="serverAlert"
+            class="bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30 rounded-xl p-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="flex-shrink-0">
+                    <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-white text-sm font-medium">
+                        <span class="text-blue-400">💡 Tips:</span> Gunakan fitur <span
+                            class="text-purple-400 font-bold">Search</span> untuk mencari manga dari semua server!
+                    </p>
+                    <p class="text-gray-400 text-xs mt-1">
+                        Kami memiliki 3 server: <span class="text-purple-300">Indonesia</span> (ID) • <span
+                            class="text-blue-300">Asia</span> (ID/EN) • <span
+                            class="text-green-300">International</span>
+                        (EN)
+                    </p>
+                </div>
             </div>
-            <div>
-                <p class="text-white text-sm font-medium">
-                    <span class="text-blue-400">💡 Tips:</span> Gunakan fitur <span
-                        class="text-purple-400 font-bold">Search</span> untuk mencari manga dari semua server!
-                </p>
-                <p class="text-gray-400 text-xs mt-1">
-                    Kami memiliki 3 server: <span class="text-purple-300">Indonesia</span> (ID) • <span
-                        class="text-blue-300">Asia</span> (ID/EN) • <span class="text-green-300">International</span>
-                    (EN)
-                </p>
+            <button onclick="document.getElementById('serverAlert').remove()"
+                class="flex-shrink-0 ml-4 p-1 text-gray-400 hover:text-white transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Project Promotion Banner -->
+        <div id="promoBanner"
+            class="bg-gradient-to-r from-purple-900/50 to-blue-900/50 border border-purple-500/20 rounded-xl p-4 relative">
+            <button onclick="document.getElementById('promoBanner').remove()"
+                class="absolute top-2 right-2 text-gray-400 hover:text-white transition-colors p-1">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <div class="flex flex-col sm:flex-row sm:items-center gap-3 pr-8">
+                <div class="flex items-center gap-2 flex-shrink-0">
+                    <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    <span class="text-white text-sm font-medium">Cek project lainnya:</span>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <a href="https://donghua.komikkuya.my.id/" target="_blank" rel="noopener"
+                        class="flex items-center gap-2 px-3 py-1.5 bg-red-600/20 hover:bg-red-600/40 border border-red-500/30 rounded-lg text-red-300 hover:text-white transition-all text-xs">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M18 3v2h-2V3H8v2H6V3H4v18h2v-2h2v2h8v-2h2v2h2V3h-2zM8 17H6v-2h2v2zm0-4H6v-2h2v2zm0-4H6V7h2v2zm10 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z" />
+                        </svg>
+                        Donghua Streaming
+                    </a>
+                    <a href="https://steam.kotaklegend.my.id/" target="_blank" rel="noopener"
+                        class="flex items-center gap-2 px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600/40 border border-blue-500/30 rounded-lg text-blue-300 hover:text-white transition-all text-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="w-4 h-4" viewBox="0 0 16 16">
+                            <path
+                                d="M.329 10.333A8.01 8.01 0 0 0 7.99 16C12.414 16 16 12.418 16 8s-3.586-8-8.009-8A8.006 8.006 0 0 0 0 7.468l.003.006 4.304 1.769A2.2 2.2 0 0 1 5.62 8.88l1.96-2.844-.001-.04a3.046 3.046 0 0 1 3.042-3.043 3.046 3.046 0 0 1 3.042 3.043 3.047 3.047 0 0 1-3.111 3.044l-2.804 2a2.223 2.223 0 0 1-3.075 2.11 2.22 2.22 0 0 1-1.312-1.568L.33 10.333Z" />
+                            <path
+                                d="M4.868 12.683a1.715 1.715 0 0 0 1.318-3.165 1.7 1.7 0 0 0-1.263-.02l1.023.424a1.261 1.261 0 1 1-.97 2.33l-.99-.41a1.7 1.7 0 0 0 .882.84Zm3.726-6.687a2.03 2.03 0 0 0 2.027 2.029 2.03 2.03 0 0 0 2.027-2.029 2.03 2.03 0 0 0-2.027-2.027 2.03 2.03 0 0 0-2.027 2.027m2.03-1.527a1.524 1.524 0 1 1-.002 3.048 1.524 1.524 0 0 1 .002-3.048" />
+                        </svg>
+                        Steam Game Inject
+                    </a>
+                </div>
             </div>
         </div>
-        <button onclick="document.getElementById('serverAlert').remove()"
-            class="flex-shrink-0 ml-4 p-1 text-gray-400 hover:text-white transition-colors">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-        </button>
     </div>
-
     <!-- Main Content with Sidebar -->
     <div class="flex flex-col lg:flex-row gap-8">
         <!-- Main Content -->
