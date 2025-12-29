@@ -3,78 +3,178 @@
         <div class="max-w-4xl mx-auto">
             <div class="bg-primary-800/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-purple-500/20">
                 <h1 class="text-3xl font-bold text-white mb-6">Contact Us</h1>
-                
+
                 <div class="prose prose-invert max-w-none">
-                    <p class="text-gray-300 mb-6">
-                        Have questions or concerns? We'd love to hear from you. Please fill out the form below and we'll get back to you as soon as possible.
-                    </p>
-                    
-                    <form action="/contact" method="POST" class="space-y-6">
-                        <div>
-                            <label for="name" class="block text-sm font-medium text-gray-300 mb-2">Name</label>
-                            <input type="text" 
-                                   id="name" 
-                                   name="name" 
-                                   required 
-                                   class="w-full bg-primary-900/50 border border-purple-500/30 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 transition-all">
-                        </div>
-                        
-                        <div>
-                            <label for="email" class="block text-sm font-medium text-gray-300 mb-2">Email</label>
-                            <input type="email" 
-                                   id="email" 
-                                   name="email" 
-                                   required 
-                                   class="w-full bg-primary-900/50 border border-purple-500/30 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 transition-all">
-                        </div>
-                        
-                        <div>
-                            <label for="subject" class="block text-sm font-medium text-gray-300 mb-2">Subject</label>
-                            <select id="subject" 
-                                    name="subject" 
-                                    required 
-                                    class="w-full bg-primary-900/50 border border-purple-500/30 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 transition-all">
-                                <option value="">Select a subject</option>
-                                <option value="general">General Inquiry</option>
-                                <option value="support">Technical Support</option>
-                                <option value="feedback">Feedback</option>
-                                <option value="dmca">DMCA Notice</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
-                        
-                        <div>
-                            <label for="message" class="block text-sm font-medium text-gray-300 mb-2">Message</label>
-                            <textarea id="message" 
-                                      name="message" 
-                                      rows="6" 
-                                      required 
-                                      class="w-full bg-primary-900/50 border border-purple-500/30 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 transition-all"></textarea>
-                        </div>
-                        
-                        <div class="flex justify-end">
-                            <button type="submit" 
-                                    class="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition-all duration-300 transform hover:scale-105">
-                                Send Message
-                            </button>
-                        </div>
-                    </form>
-                    
-                    <div class="mt-12 pt-6 border-t border-purple-500/20">
-                        <h2 class="text-xl font-semibold text-white mt-8 mb-4">Other Ways to Reach Us</h2>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="bg-primary-900/50 rounded-xl p-6">
-                                <h3 class="text-lg font-medium text-white mb-2">Email</h3>
-                                <p class="text-gray-300">support@komikkuya.my.id</p>
-                            </div>
-                            <div class="bg-primary-900/50 rounded-xl p-6">
-                                <h3 class="text-lg font-medium text-white mb-2">Response Time</h3>
-                                <p class="text-gray-300">We typically respond within 24-48 hours</p>
+                    <!-- Rate Limit Warning -->
+                    <% if (isRateLimited) { %>
+                        <div
+                            class="bg-yellow-600/20 border border-yellow-500/30 rounded-xl p-4 mb-6 flex items-center gap-3">
+                            <svg class="w-6 h-6 text-yellow-400 flex-shrink-0" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <div>
+                                <p class="text-yellow-300 text-sm font-medium">Rate Limit Active</p>
+                                <p class="text-yellow-200/70 text-xs">You can send another message in <%=
+                                        remainingMinutes %> minutes.</p>
                             </div>
                         </div>
-                    </div>
+                        <% } %>
+
+                            <!-- Success Message -->
+                            <% if (success) { %>
+                                <div
+                                    class="bg-green-600/20 border border-green-500/30 rounded-xl p-4 mb-6 flex items-center gap-3">
+                                    <svg class="w-6 h-6 text-green-400 flex-shrink-0" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    <p class="text-green-300 text-sm">Your message has been sent successfully! We'll get
+                                        back to you soon.</p>
+                                </div>
+                                <% } %>
+
+                                    <!-- Error Message -->
+                                    <% if (error) { %>
+                                        <div
+                                            class="bg-red-600/20 border border-red-500/30 rounded-xl p-4 mb-6 flex items-center gap-3">
+                                            <svg class="w-6 h-6 text-red-400 flex-shrink-0" fill="none"
+                                                stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            <p class="text-red-300 text-sm">
+                                                <%= error %>
+                                            </p>
+                                        </div>
+                                        <% } %>
+
+                                            <p class="text-gray-300 mb-6">
+                                                Have questions or concerns? We'd love to hear from you. Please fill out
+                                                the form below and we'll
+                                                get back to you as soon as possible.
+                                            </p>
+
+                                            <!-- Rate Limit Info -->
+                                            <div class="bg-blue-600/10 border border-blue-500/20 rounded-xl p-4 mb-6">
+                                                <div class="flex items-center gap-2 text-blue-300 text-sm">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    </svg>
+                                                    <span>⏱️ 1 message per hour.</span>
+                                                </div>
+                                            </div>
+
+                                            <form action="/contact" method="POST" class="space-y-6" id="contactForm">
+                                                <div>
+                                                    <label for="name"
+                                                        class="block text-sm font-medium text-gray-300 mb-2">Name</label>
+                                                    <input type="text" id="name" name="name" required <%=isRateLimited
+                                                        ? 'disabled' : '' %>
+                                                    class="w-full bg-primary-900/50 border border-purple-500/30
+                                                    rounded-xl px-4 py-3 text-white placeholder-gray-400
+                                                    focus:outline-none focus:border-purple-500/50 focus:ring-1
+                                                    focus:ring-purple-500/50 transition-all disabled:opacity-50
+                                                    disabled:cursor-not-allowed">
+                                                </div>
+
+                                                <div>
+                                                    <label for="email"
+                                                        class="block text-sm font-medium text-gray-300 mb-2">Email</label>
+                                                    <input type="email" id="email" name="email" required
+                                                        <%=isRateLimited ? 'disabled' : '' %>
+                                                    class="w-full bg-primary-900/50 border border-purple-500/30
+                                                    rounded-xl px-4 py-3 text-white placeholder-gray-400
+                                                    focus:outline-none focus:border-purple-500/50 focus:ring-1
+                                                    focus:ring-purple-500/50 transition-all disabled:opacity-50
+                                                    disabled:cursor-not-allowed">
+                                                </div>
+
+                                                <div>
+                                                    <label for="subject"
+                                                        class="block text-sm font-medium text-gray-300 mb-2">Subject</label>
+                                                    <select id="subject" name="subject" required <%=isRateLimited
+                                                        ? 'disabled' : '' %>
+                                                        class="w-full bg-primary-900/50 border border-purple-500/30
+                                                        rounded-xl px-4 py-3 text-white placeholder-gray-400
+                                                        focus:outline-none focus:border-purple-500/50 focus:ring-1
+                                                        focus:ring-purple-500/50 transition-all disabled:opacity-50
+                                                        disabled:cursor-not-allowed">
+                                                        <option value="">Select a subject</option>
+                                                        <option value="general">General Inquiry</option>
+                                                        <option value="support">Technical Support</option>
+                                                        <option value="feedback">Feedback</option>
+                                                        <option value="dmca">DMCA Notice</option>
+                                                        <option value="other">Other</option>
+                                                    </select>
+                                                </div>
+
+                                                <div>
+                                                    <label for="message"
+                                                        class="block text-sm font-medium text-gray-300 mb-2">Message</label>
+                                                    <textarea id="message" name="message" rows="6" required
+                                                        <%=isRateLimited ? 'disabled' : '' %>
+                                class="w-full bg-primary-900/50 border border-purple-500/30 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"></textarea>
+                                                </div>
+
+                                                <div class="flex justify-end">
+                                                    <button type="submit" id="submitBtn" <%=isRateLimited ? 'disabled'
+                                                        : '' %>
+                                                        class="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white
+                                                        rounded-xl transition-all duration-300 transform hover:scale-105
+                                                        flex items-center gap-2 disabled:opacity-50
+                                                        disabled:cursor-not-allowed disabled:hover:scale-100">
+                                                        <span>
+                                                            <%= isRateLimited ? 'Rate Limited' : 'Send Message' %>
+                                                        </span>
+                                                        <svg id="loadingSpinner" class="w-5 h-5 animate-spin hidden"
+                                                            fill="none" viewBox="0 0 24 24">
+                                                            <circle class="opacity-25" cx="12" cy="12" r="10"
+                                                                stroke="currentColor" stroke-width="4"></circle>
+                                                            <path class="opacity-75" fill="currentColor"
+                                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                                            </path>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </form>
+
+                                            <script>
+                                                document.getElementById('contactForm').addEventListener('submit', function (e) {
+                                                    const submitBtn = document.getElementById('submitBtn');
+                                                    if (submitBtn.disabled) {
+                                                        e.preventDefault();
+                                                        return;
+                                                    }
+                                                    submitBtn.disabled = true;
+                                                    submitBtn.querySelector('span').textContent = 'Sending...';
+                                                    document.getElementById('loadingSpinner').classList.remove('hidden');
+                                                });
+                                            </script>
+
+                                            <div class="mt-12 pt-6 border-t border-purple-500/20">
+                                                <h2 class="text-xl font-semibold text-white mt-8 mb-4">Other Ways to
+                                                    Reach Us</h2>
+                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                    <div class="bg-primary-900/50 rounded-xl p-6">
+                                                        <h3 class="text-lg font-medium text-white mb-2">Email</h3>
+                                                        <p class="text-gray-300">amwp@afifmedya.my.id</p>
+                                                    </div>
+                                                    <div class="bg-primary-900/50 rounded-xl p-6">
+                                                        <h3 class="text-lg font-medium text-white mb-2">Response Time
+                                                        </h3>
+                                                        <p class="text-gray-300">We typically respond within 24-48 hours
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
                 </div>
             </div>
         </div>
     </div>
-</div> 
+</div>
