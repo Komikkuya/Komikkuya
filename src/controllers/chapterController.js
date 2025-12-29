@@ -14,10 +14,54 @@ const chapterController = {
 
             // Remove leading slash if present and construct the full URL
             const cleanUrl = chapterUrl.startsWith('/') ? chapterUrl.slice(1) : chapterUrl;
-            const fullUrl = `https://komiku.id/${cleanUrl}`;
 
-            const response = await fetch(`https://komiku-api-self.vercel.app/api/chapter?url=${encodeURIComponent(fullUrl)}`);
-            const data = await response.json();
+            // Determine if this is an Asia manga chapter
+            // Asia chapters have format like "view/manga-slug-chapter-X-bahasa-indonesia"
+            const isAsiaChapter = cleanUrl.includes('bahasa-indonesia') || cleanUrl.startsWith('view/');
+
+            let data;
+            let isAsiaSource = false;
+
+            if (isAsiaChapter) {
+                const asiaUrl = `https://westmanga.me/${cleanUrl}`;
+                const response = await fetch(`https://komiku-api-self.vercel.app/api/asia/chapter?url=${encodeURIComponent(asiaUrl)}`);
+                const asiaData = await response.json();
+
+                if (asiaData.success && asiaData.data) {
+                    isAsiaSource = true;
+                    // Normalize Asia API response to match Komiku format
+                    data = {
+                        title: asiaData.data.title,
+                        mangaTitle: asiaData.data.title.replace(/Chapter.*$/i, '').trim(),
+                        releaseDate: asiaData.data.createdAt,
+                        images: (asiaData.data.images || []).map((url, index) => ({
+                            url: url,
+                            alt: `Page ${index + 1}`,
+                            width: 'auto',
+                            height: 'auto'
+                        })),
+                        navigation: {
+                            prev: asiaData.data.prevChapter ? {
+                                url: asiaData.data.prevChapter,
+                                title: 'Previous Chapter'
+                            } : null,
+                            next: asiaData.data.nextChapter ? {
+                                url: asiaData.data.nextChapter,
+                                title: 'Next Chapter'
+                            } : null,
+                            chapterList: asiaData.data.comicUrl
+                        },
+                        source: 'asia'
+                    };
+                }
+            }
+
+            // If not Asia or Asia API failed, try Komiku API
+            if (!data) {
+                const fullUrl = `https://komiku.id/${cleanUrl}`;
+                const response = await fetch(`https://komiku-api-self.vercel.app/api/chapter?url=${encodeURIComponent(fullUrl)}`);
+                data = await response.json();
+            }
 
             if (!data || !data.images) {
                 return res.status(404).render('error', {
@@ -32,9 +76,65 @@ const chapterController = {
             const nextChapterNumber = data.navigation?.next?.url?.match(/chapter-(\d+)/)?.[1] || '';
 
             // Extract manga detail URL from chapterList
-            const mangaDetailUrl = data.navigation?.chapterList ?
-                `${new URL(data.navigation.chapterList).pathname}` :
-                null;
+            let mangaDetailUrl = null;
+            if (data.navigation?.chapterList) {
+                try {
+                    const chapterListUrl = new URL(data.navigation.chapterList);
+                    if (chapterListUrl.hostname.includes('westmanga')) {
+                        // Asia manga - extract slug from /comic/slug
+                        const slug = chapterListUrl.pathname.split('/comic/')[1]?.replace('/', '') || '';
+                        mangaDetailUrl = `/manga/${slug}`;
+                    } else {
+                        mangaDetailUrl = chapterListUrl.pathname;
+                    }
+                } catch (e) {
+                    mangaDetailUrl = null;
+                }
+            }
+
+            // Build navigation URLs
+            let prevNavigation = null;
+            let nextNavigation = null;
+
+            if (data.navigation?.prev?.url) {
+                try {
+                    const prevUrl = new URL(data.navigation.prev.url);
+                    if (isAsiaSource || prevUrl.hostname.includes('westmanga')) {
+                        // Asia chapter navigation
+                        prevNavigation = {
+                            url: `/chapter/${prevUrl.pathname.replace('/view/', 'view/')}`,
+                            title: data.navigation.prev.title || 'Previous Chapter'
+                        };
+                    } else {
+                        prevNavigation = {
+                            url: `/chapter${prevUrl.pathname}`,
+                            title: data.navigation.prev.title
+                        };
+                    }
+                } catch (e) {
+                    prevNavigation = null;
+                }
+            }
+
+            if (data.navigation?.next?.url) {
+                try {
+                    const nextUrl = new URL(data.navigation.next.url);
+                    if (isAsiaSource || nextUrl.hostname.includes('westmanga')) {
+                        // Asia chapter navigation
+                        nextNavigation = {
+                            url: `/chapter/${nextUrl.pathname.replace('/view/', 'view/')}`,
+                            title: data.navigation.next.title || 'Next Chapter'
+                        };
+                    } else {
+                        nextNavigation = {
+                            url: `/chapter${nextUrl.pathname}`,
+                            title: data.navigation.next.title
+                        };
+                    }
+                } catch (e) {
+                    nextNavigation = null;
+                }
+            }
 
             res.render('manga/chapter', {
                 title: `${data.title} - ${data.mangaTitle} | Baca Gratis Komikkuya`,
@@ -49,19 +149,14 @@ const chapterController = {
                 ],
                 chapter: data,
                 navigation: {
-                    prev: data.navigation?.prev?.url ? {
-                        url: `/chapter${new URL(data.navigation.prev.url).pathname}`,
-                        title: data.navigation.prev.title
-                    } : null,
-                    next: data.navigation?.next?.url ? {
-                        url: `/chapter${new URL(data.navigation.next.url).pathname}`,
-                        title: data.navigation.next.title
-                    } : null,
+                    prev: prevNavigation,
+                    next: nextNavigation,
                     currentChapter: currentChapterNumber,
                     prevChapter: prevChapterNumber,
                     nextChapter: nextChapterNumber,
                     mangaDetailUrl
-                }
+                },
+                isAsiaSource: isAsiaSource
             });
         } catch (error) {
             console.error('Error fetching chapter:', error);
@@ -73,4 +168,4 @@ const chapterController = {
     }
 };
 
-module.exports = chapterController; 
+module.exports = chapterController;

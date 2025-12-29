@@ -2,13 +2,57 @@ const fetch = require('node-fetch');
 const path = require('path');
 const fs = require('fs');
 
+// List of Asia manga slugs (from westmanga.me)
+// This will be checked to determine which API to use
+const isAsiaManga = (slug) => {
+    // Asia manga uses westmanga.me URLs, accessed via their slug
+    // For now, we'll try Komiku first, and if it fails, try Asia
+    return false; // Will be determined dynamically
+};
+
 const mangaController = {
     detail: async (req, res) => {
         try {
             const { slug } = req.params;
-            const mangaUrl = `https://komiku.id/manga/${slug}/`;
-            const response = await fetch(`https://komiku-api-self.vercel.app/api/manga?url=${encodeURIComponent(mangaUrl)}`);
-            const data = await response.json();
+
+            // First try Komiku API
+            const komikuUrl = `https://komiku.id/manga/${slug}/`;
+            let response = await fetch(`https://komiku-api-self.vercel.app/api/manga?url=${encodeURIComponent(komikuUrl)}`);
+            let data = await response.json();
+
+            // Check if Komiku API returned valid data
+            let isAsiaSource = false;
+            if (!data || !data.title || data.error) {
+                // Try Asia API
+                const asiaUrl = `https://westmanga.me/comic/${slug}`;
+                response = await fetch(`https://komiku-api-self.vercel.app/api/asia/detail?url=${encodeURIComponent(asiaUrl)}`);
+                const asiaData = await response.json();
+
+                if (asiaData.success && asiaData.data) {
+                    isAsiaSource = true;
+                    // Normalize Asia API response to match Komiku format
+                    data = {
+                        title: asiaData.data.title,
+                        alternativeTitle: asiaData.data.alternativeTitle,
+                        description: asiaData.data.description,
+                        coverImage: asiaData.data.cover,
+                        type: asiaData.data.type || 'Manhwa',
+                        status: asiaData.data.status,
+                        author: asiaData.data.author,
+                        genres: asiaData.data.genres || [],
+                        chapters: (asiaData.data.chapters || []).map(ch => ({
+                            title: ch.title,
+                            url: ch.url,
+                            date: ch.date,
+                            readers: 0
+                        })),
+                        source: 'asia',
+                        originalUrl: asiaData.data.url
+                    };
+                } else {
+                    throw new Error('Manga not found in both sources');
+                }
+            }
 
             // Truncate description for meta
             const truncatedDesc = data.description ?
@@ -46,7 +90,8 @@ const mangaController = {
                     { name: 'Manga', url: 'https://komikkuya.my.id/popular' },
                     { name: data.title, url: `https://komikkuya.my.id/manga/${slug}` }
                 ],
-                manga: data
+                manga: data,
+                isAsiaSource: isAsiaSource
             });
         } catch (error) {
             console.error('Error fetching manga details:', error);
@@ -79,13 +124,19 @@ const mangaController = {
                 const urlObj = new URL(originalUrl);
                 const proxyUrl = urlObj.origin + urlObj.pathname + urlObj.search;
 
+                // Determine referer based on image source
+                let referer = 'https://komiku.id/';
+                if (originalUrl.includes('westmanga') || originalUrl.includes('storage.westmanga')) {
+                    referer = 'https://westmanga.me/';
+                }
+
                 const response = await fetch(proxyUrl, {
                     headers: {
                         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
                         'Accept': 'image/webp,image/apng,image/*,*/*;q=0.8',
                         'Accept-Encoding': 'gzip, deflate, br',
                         'Connection': 'keep-alive',
-                        'Referer': 'https://komiku.id/'
+                        'Referer': referer
                     }
                 });
 
@@ -157,4 +208,4 @@ function serveDefaultImage(res) {
     }
 }
 
-module.exports = mangaController; 
+module.exports = mangaController;

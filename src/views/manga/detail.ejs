@@ -108,8 +108,22 @@
                 </div>
             </div>
             <div id="chaptersList" class="grid gap-4">
-                <% manga.chapters.forEach(chapter=> { %>
-                    <a href="/chapter<%= new URL(chapter.url).pathname %>"
+                <% manga.chapters.forEach(chapter=> {
+                    // Handle different URL formats
+                    let chapterPath = '';
+                    try {
+                    const chapterUrl = new URL(chapter.url);
+                    if (chapterUrl.hostname.includes('westmanga')) {
+                    // Asia chapter - use view/ prefix
+                    chapterPath = chapterUrl.pathname.replace('/view/', 'view/');
+                    } else {
+                    chapterPath = chapterUrl.pathname;
+                    }
+                    } catch(e) {
+                    chapterPath = chapter.url;
+                    }
+                    %>
+                    <a href="/chapter/<%= chapterPath %>"
                         class="group flex items-center justify-between p-4 bg-primary-700/50 rounded-xl hover:bg-primary-600/50 transition-all duration-300 backdrop-blur-sm">
                         <div>
                             <h3 class="font-semibold group-hover:text-purple-400 transition-colors">

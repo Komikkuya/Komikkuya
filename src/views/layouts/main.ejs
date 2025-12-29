@@ -477,18 +477,36 @@
                         if (data.success && data.data && data.data.length > 0) {
                             searchResults.innerHTML = `
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    ${data.data.map(manga => `
-                                        <a href="/manga/${manga.mangaUrl.split('/manga/')[1].replace('/', '')}" class="flex items-center space-x-4 p-3 rounded-xl bg-primary-700/30 hover:bg-primary-700/50 transition-colors">
+                                    ${data.data.map(manga => {
+                                // Handle different URL formats from Komiku and Asia APIs
+                                let mangaSlug = '';
+                                if (manga.mangaUrl) {
+                                    if (manga.mangaUrl.includes('/manga/')) {
+                                        mangaSlug = manga.mangaUrl.split('/manga/')[1]?.replace('/', '') || '';
+                                    } else if (manga.mangaUrl.includes('/comic/')) {
+                                        mangaSlug = manga.mangaUrl.split('/comic/')[1]?.replace('/', '') || '';
+                                    } else if (manga.slug) {
+                                        mangaSlug = manga.slug;
+                                    } else {
+                                        const urlParts = manga.mangaUrl.split('/').filter(p => p);
+                                        mangaSlug = urlParts[urlParts.length - 1] || '';
+                                    }
+                                } else if (manga.slug) {
+                                    mangaSlug = manga.slug;
+                                }
+
+                                return `
+                                        <a href="/manga/${mangaSlug}" class="flex items-center space-x-4 p-3 rounded-xl bg-primary-700/30 hover:bg-primary-700/50 transition-colors">
                                             <div class="w-16 h-20 rounded-lg overflow-hidden flex-shrink-0">
                                                 <img src="${manga.imageUrl}" alt="${manga.title}" class="w-full h-full object-cover">
                                             </div>
                                             <div class="flex-1 min-w-0">
                                                 <h3 class="text-white font-medium truncate">${manga.title}</h3>
-                                                <p class="text-gray-400 text-sm truncate">${manga.genre || 'Unknown Genre'}</p>
-                                                <p class="text-purple-400 text-xs truncate">${manga.latestChapter ? manga.latestChapter.title : 'No chapters'}</p>
+                                                <p class="text-gray-400 text-sm truncate">${manga.genre || manga.status || 'Unknown'}</p>
+                                                <p class="text-purple-400 text-xs truncate">${manga.latestChapter ? manga.latestChapter.title : (manga.source === 'asia' ? 'Asia' : 'No chapters')}</p>
                                             </div>
                                         </a>
-                                    `).join('')}
+                                    `}).join('')}
                                 </div>
                             `;
                         } else {
