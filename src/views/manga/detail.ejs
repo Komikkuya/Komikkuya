@@ -109,18 +109,28 @@
             </div>
             <div id="chaptersList" class="grid gap-4">
                 <% manga.chapters.forEach(chapter=> {
-                    // Handle different URL formats
+                    // Handle different URL formats from Komiku, Asia, and International APIs
                     let chapterPath = '';
                     try {
                     const chapterUrl = new URL(chapter.url);
                     if (chapterUrl.hostname.includes('westmanga')) {
                     // Asia chapter - use view/ prefix
                     chapterPath = chapterUrl.pathname.replace('/view/', 'view/');
+                    } else if (chapterUrl.hostname.includes('weebcentral')) {
+                    // International chapter - use chapters/ID format
+                    const chapterId = chapterUrl.pathname.split('/chapters/')[1] || '';
+                    chapterPath = `chapters/${chapterId}`;
                     } else {
+                    // Komiku chapter
                     chapterPath = chapterUrl.pathname;
                     }
                     } catch(e) {
+                    // If URL parsing fails, use chapter.chapterId for International or raw url
+                    if (chapter.chapterId) {
+                    chapterPath = `chapters/${chapter.chapterId}`;
+                    } else {
                     chapterPath = chapter.url;
+                    }
                     }
                     %>
                     <a href="/chapter/<%= chapterPath %>"

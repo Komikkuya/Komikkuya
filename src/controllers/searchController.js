@@ -1,5 +1,12 @@
 const fetch = require('node-fetch');
 
+/**
+ * Search Controller
+ * Aggregates search results from multiple API sources:
+ * - Komiku API (Indonesian manga from komiku.id)
+ * - Asia API (Korean/Chinese manga from westmanga.me)
+ * - International API (English manga from weebcentral.com)
+ */
 const searchController = {
     search: async (req, res) => {
         try {
@@ -9,14 +16,14 @@ const searchController = {
                 return res.json({ success: true, data: [] });
             }
 
-            // Fetch from both endpoints in parallel
-            const [komikuResponse, asiaResponse] = await Promise.allSettled([
+            // Fetch from all endpoints in parallel
+            const [komikuResponse, asiaResponse, internationalResponse] = await Promise.allSettled([
                 fetch(`https://komiku-api-self.vercel.app/api/search?query=${encodeURIComponent(query)}`),
-                fetch(`https://komiku-api-self.vercel.app/api/asia/search?q=${encodeURIComponent(query)}`)
+                fetch(`https://komiku-api-self.vercel.app/api/asia/search?q=${encodeURIComponent(query)}`),
+                fetch(`https://international.komikkuya.my.id/api/international/search?q=${encodeURIComponent(query)}`)
             ]);
 
             let allResults = [];
-            const seenTitles = new Set();
 
             // Process Komiku API response
             if (komikuResponse.status === 'fulfilled' && komikuResponse.value.ok) {
@@ -24,17 +31,13 @@ const searchController = {
                     const komikuData = await komikuResponse.value.json();
                     if (komikuData.success && Array.isArray(komikuData.data)) {
                         komikuData.data.forEach(item => {
-                            const normalizedTitle = item.title?.toLowerCase().trim();
-                            if (normalizedTitle && !seenTitles.has(normalizedTitle)) {
-                                seenTitles.add(normalizedTitle);
-                                allResults.push({
-                                    title: item.title,
-                                    imageUrl: item.imageUrl,
-                                    mangaUrl: item.mangaUrl,
-                                    latestChapter: item.latestChapter,
-                                    source: 'komiku'
-                                });
-                            }
+                            allResults.push({
+                                title: item.title,
+                                imageUrl: item.imageUrl,
+                                mangaUrl: item.mangaUrl,
+                                latestChapter: item.latestChapter,
+                                source: 'komiku'
+                            });
                         });
                     }
                 } catch (e) {
@@ -48,21 +51,16 @@ const searchController = {
                     const asiaData = await asiaResponse.value.json();
                     if (asiaData.success && asiaData.data && Array.isArray(asiaData.data.results)) {
                         asiaData.data.results.forEach(item => {
-                            const normalizedTitle = item.title?.toLowerCase().trim();
-                            if (normalizedTitle && !seenTitles.has(normalizedTitle)) {
-                                seenTitles.add(normalizedTitle);
-                                // Normalize Asia API format to match Komiku format
-                                allResults.push({
-                                    title: item.title,
-                                    imageUrl: item.imageUrl,
-                                    mangaUrl: item.url, // Asia API uses 'url' instead of 'mangaUrl'
-                                    latestChapter: null, // Asia API doesn't provide latest chapter
-                                    rating: item.rating,
-                                    status: item.status,
-                                    slug: item.slug,
-                                    source: 'asia'
-                                });
-                            }
+                            allResults.push({
+                                title: item.title,
+                                imageUrl: item.imageUrl,
+                                mangaUrl: item.url,
+                                latestChapter: null,
+                                rating: item.rating,
+                                status: item.status,
+                                slug: item.slug,
+                                source: 'asia'
+                            });
                         });
                     }
                 } catch (e) {
@@ -70,7 +68,29 @@ const searchController = {
                 }
             }
 
-            // Return combined results
+            // Process International API response (weebcentral.com)
+            if (internationalResponse.status === 'fulfilled' && internationalResponse.value.ok) {
+                try {
+                    const intlData = await internationalResponse.value.json();
+                    if (intlData.success && intlData.data && Array.isArray(intlData.data.results)) {
+                        intlData.data.results.forEach(item => {
+                            allResults.push({
+                                title: item.title,
+                                imageUrl: item.cover,
+                                mangaUrl: item.url,
+                                latestChapter: null,
+                                seriesId: item.seriesId,
+                                slug: item.slug,
+                                source: 'international'
+                            });
+                        });
+                    }
+                } catch (e) {
+                    console.error('Error parsing International response:', e);
+                }
+            }
+
+            // Return combined results (no deduplication)
             res.json({
                 success: true,
                 data: allResults,
@@ -78,7 +98,8 @@ const searchController = {
                     total: allResults.length,
                     sources: {
                         komiku: allResults.filter(r => r.source === 'komiku').length,
-                        asia: allResults.filter(r => r.source === 'asia').length
+                        asia: allResults.filter(r => r.source === 'asia').length,
+                        international: allResults.filter(r => r.source === 'international').length
                     }
                 }
             });

@@ -2,14 +2,13 @@ const fetch = require('node-fetch');
 const path = require('path');
 const fs = require('fs');
 
-// List of Asia manga slugs (from westmanga.me)
-// This will be checked to determine which API to use
-const isAsiaManga = (slug) => {
-    // Asia manga uses westmanga.me URLs, accessed via their slug
-    // For now, we'll try Komiku first, and if it fails, try Asia
-    return false; // Will be determined dynamically
-};
-
+/**
+ * Manga Controller
+ * Handles manga detail pages from multiple sources:
+ * - Komiku API (Indonesian manga from komiku.id)
+ * - Asia API (Korean/Chinese manga from westmanga.me)
+ * - International API (English manga from weebcentral.com)
+ */
 const mangaController = {
     detail: async (req, res) => {
         try {
@@ -21,15 +20,15 @@ const mangaController = {
             let data = await response.json();
 
             // Check if Komiku API returned valid data
-            let isAsiaSource = false;
+            let sourceType = 'komiku';
             if (!data || !data.title || data.error) {
                 // Try Asia API
                 const asiaUrl = `https://westmanga.me/comic/${slug}`;
                 response = await fetch(`https://komiku-api-self.vercel.app/api/asia/detail?url=${encodeURIComponent(asiaUrl)}`);
                 const asiaData = await response.json();
 
-                if (asiaData.success && asiaData.data) {
-                    isAsiaSource = true;
+                if (asiaData.success && asiaData.data && asiaData.data.title) {
+                    sourceType = 'asia';
                     // Normalize Asia API response to match Komiku format
                     data = {
                         title: asiaData.data.title,
@@ -50,7 +49,52 @@ const mangaController = {
                         originalUrl: asiaData.data.url
                     };
                 } else {
-                    throw new Error('Manga not found in both sources');
+                    // Try International API (weebcentral.com)
+                    // International uses seriesId in URL, so we need to search first
+                    const intlSearchResponse = await fetch(`https://international.komikkuya.my.id/api/international/search?q=${encodeURIComponent(slug.replace(/-/g, ' '))}`);
+                    const intlSearchData = await intlSearchResponse.json();
+
+                    if (intlSearchData.success && intlSearchData.data && intlSearchData.data.results && intlSearchData.data.results.length > 0) {
+                        // Find exact match or use first result
+                        const matchedManga = intlSearchData.data.results.find(r =>
+                            r.slug?.toLowerCase() === slug.toLowerCase() ||
+                            r.title?.toLowerCase().replace(/[^a-z0-9]/g, '-') === slug.toLowerCase()
+                        ) || intlSearchData.data.results[0];
+
+                        if (matchedManga) {
+                            const intlDetailResponse = await fetch(`https://international.komikkuya.my.id/api/international/detail?url=${encodeURIComponent(matchedManga.url)}`);
+                            const intlData = await intlDetailResponse.json();
+
+                            if (intlData.success && intlData.data && intlData.data.title) {
+                                sourceType = 'international';
+                                // Normalize International API response
+                                data = {
+                                    title: intlData.data.title.replace(/(.+)\1/, '$1'), // Fix duplicate title bug
+                                    alternativeTitle: null,
+                                    description: intlData.data.description,
+                                    coverImage: intlData.data.cover,
+                                    type: intlData.data.type || 'Manga',
+                                    status: intlData.data.status,
+                                    author: intlData.data.authors?.join(', ') || 'Unknown',
+                                    genres: intlData.data.tags || [],
+                                    chapters: (intlData.data.chapters || []).map(ch => ({
+                                        title: ch.title,
+                                        url: ch.url,
+                                        date: ch.date ? new Date(ch.date).toLocaleDateString('id-ID') : '',
+                                        readers: 0,
+                                        chapterId: ch.id
+                                    })),
+                                    source: 'international',
+                                    seriesId: intlData.data.seriesId,
+                                    originalUrl: intlData.data.url
+                                };
+                            }
+                        }
+                    }
+
+                    if (!data || !data.title) {
+                        throw new Error('Manga not found in all sources');
+                    }
                 }
             }
 
@@ -71,7 +115,7 @@ const mangaController = {
                     "name": data.author || "Unknown"
                 },
                 "genre": data.genres || [],
-                "inLanguage": "id-ID",
+                "inLanguage": sourceType === 'international' ? 'en' : 'id-ID',
                 "image": data.coverImage,
                 "url": `https://komikkuya.my.id/manga/${slug}`
             };
@@ -91,7 +135,7 @@ const mangaController = {
                     { name: data.title, url: `https://komikkuya.my.id/manga/${slug}` }
                 ],
                 manga: data,
-                isAsiaSource: isAsiaSource
+                sourceType: sourceType
             });
         } catch (error) {
             console.error('Error fetching manga details:', error);
@@ -128,6 +172,8 @@ const mangaController = {
                 let referer = 'https://komiku.id/';
                 if (originalUrl.includes('westmanga') || originalUrl.includes('storage.westmanga')) {
                     referer = 'https://westmanga.me/';
+                } else if (originalUrl.includes('weebcentral') || originalUrl.includes('planeptune') || originalUrl.includes('compsci88')) {
+                    referer = 'https://weebcentral.com/';
                 }
 
                 const response = await fetch(proxyUrl, {
