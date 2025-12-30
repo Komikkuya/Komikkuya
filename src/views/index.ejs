@@ -555,6 +555,58 @@
     </div>
 </div>
 
+<!-- Homepage Data Cache System -->
+<script id="homepageCacheData" type="application/json">
+<%- JSON.stringify({
+    recommendations: recommendations,
+    hotManga: hotManga,
+    latestManga: latestManga,
+    popularDaily: popularDaily,
+    popularWeekly: popularWeekly,
+    popularAll: popularAll,
+    genres: genres,
+    cachedAt: Date.now()
+}) %>
+</script>
+
+<script>
+    (function () {
+        const CACHE_KEY = 'komikkuya_homepage_cache';
+        const CACHE_DURATION = 60 * 60 * 1000; // 1 hour in milliseconds
+
+        // Get current page data
+        const pageDataEl = document.getElementById('homepageCacheData');
+        if (pageDataEl) {
+            try {
+                const pageData = JSON.parse(pageDataEl.textContent);
+                // Save to localStorage with timestamp
+                localStorage.setItem(CACHE_KEY, JSON.stringify({
+                    data: pageData,
+                    timestamp: Date.now()
+                }));
+                console.log('📦 Homepage data cached to localStorage');
+            } catch (e) {
+                console.warn('Failed to cache homepage data:', e);
+            }
+        }
+
+        // Show cache status indicator (optional - for debugging)
+        function showCacheStatus() {
+            const cached = localStorage.getItem(CACHE_KEY);
+            if (cached) {
+                try {
+                    const { timestamp } = JSON.parse(cached);
+                    const age = Date.now() - timestamp;
+                    const ageMinutes = Math.floor(age / 60000);
+                    const isValid = age < CACHE_DURATION;
+                    console.log(`📊 Cache age: ${ageMinutes} minutes (${isValid ? 'valid' : 'expired'})`);
+                } catch (e) { }
+            }
+        }
+        showCacheStatus();
+    })();
+</script>
+
 <script>
     // Notification Popup
     function showNotificationPopup() {
