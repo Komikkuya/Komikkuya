@@ -1,58 +1,79 @@
-<div class="min-h-screen bg-transparent pt-32 pb-20">
-    <div class="max-w-[1800px] mx-auto px-6 md:px-12">
-        <!-- Cinematic Header -->
-        <header class="relative mb-16 overflow-hidden">
-            <div
-                class="flex flex-col md:flex-row md:items-end justify-between gap-8 border-l-8 border-pink-600 pl-8 py-4 bg-white/5 backdrop-blur-3xl rounded-r-sm">
-                <div class="space-y-2">
-                    <span class="text-pink-500 font-black text-xs uppercase tracking-[0.4em] italic mb-2 block">Your
-                        Collection</span>
+<div class="relative min-h-screen bg-primary-950 overflow-hidden">
+    <!-- Background Ambient Glows -->
+    <div
+        class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-[800px] h-[800px] bg-purple-600/10 blur-[120px] rounded-full pointer-events-none">
+    </div>
+    <div
+        class="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-purple-900/10 blur-[100px] rounded-full pointer-events-none">
+    </div>
+
+    <div class="max-w-[1800px] mx-auto px-6 md:px-12 relative z-10 pt-32 pb-20">
+        <!-- Mega Header Section -->
+        <header class="relative mb-20">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-8">
+                <div class="space-y-4 animate-fade-in">
+                    <div class="flex items-center gap-3 text-pink-500 font-black tracking-[0.3em] uppercase text-xs">
+                        <span class="w-12 h-[2px] bg-pink-500"></span>
+                        YOUR COLLECTION
+                    </div>
                     <h1
-                        class="text-5xl md:text-7xl font-black text-white uppercase italic tracking-tighter leading-none">
-                        My <span class="text-white/20">Favorites</span>
+                        class="text-6xl md:text-8xl font-black text-white italic tracking-tighter uppercase leading-none">
+                        My <br><span class="text-transparent stroke-text">Favorites</span>
                     </h1>
                 </div>
 
-                <div class="flex items-center gap-4">
-                    <div class="bg-black/40 border border-white/10 px-6 py-3 rounded-sm backdrop-blur-md">
-                        <span id="favoritesCount" class="text-xl font-black text-white italic">0</span>
-                        <span class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-2">Items
-                            Saved</span>
+                <div class="flex items-center gap-6 animate-fade-in" style="animation-delay: 200ms">
+                    <div class="group relative px-8 py-4 bg-white/5 backdrop-blur-xl border border-white/10 rounded-sm">
+                        <div
+                            class="absolute inset-0 bg-pink-600/10 opacity-0 group-hover:opacity-100 transition-opacity">
+                        </div>
+                        <div class="relative flex flex-col">
+                            <span id="favoritesCount"
+                                class="text-4xl font-black text-white italic leading-none mb-1">0</span>
+                            <span class="text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">Saved
+                                Treasures</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </header>
 
-        <!-- Dynamic Grid (Populated by JS) -->
+        <!-- Dynamic Grid -->
         <main id="favoritesGrid"
-            class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 md:gap-8 min-h-[400px]">
-            <!-- Skeleton Loading -->
+            class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 md:gap-10 min-h-[400px]">
+            <!-- Skeleton State -->
             <% for(let i=0; i<12; i++) { %>
-                <div class="favorite-skeleton space-y-4">
-                    <div class="aspect-[2/3] bg-white/5 rounded-sm animate-pulse"></div>
-                    <div class="h-4 bg-white/5 rounded-sm animate-pulse w-3/4"></div>
+                <div class="favorite-skeleton space-y-4 animate-pulse">
+                    <div class="aspect-[2/3] bg-white/5 rounded-sm border border-white/5"></div>
+                    <div class="h-4 bg-white/5 rounded-sm w-3/4"></div>
+                    <div class="h-3 bg-white/5 rounded-sm w-1/2"></div>
                 </div>
                 <% } %>
         </main>
 
-        <!-- Empty State (Hidden by default) -->
+        <!-- Premium Empty State -->
         <div id="emptyState"
-            class="hidden flex flex-col items-center justify-center py-32 text-center space-y-8 bg-white/[0.02] border border-white/5 rounded-sm">
-            <div
-                class="w-24 h-24 rounded-full bg-pink-600/10 flex items-center justify-center border border-pink-500/20">
-                <svg class="w-10 h-10 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
+            class="hidden flex flex-col items-center justify-center py-48 text-center space-y-12 animate-fade-in">
+            <div class="relative group">
+                <div
+                    class="absolute inset-0 bg-pink-600/20 blur-[60px] group-hover:bg-pink-600/40 transition-all rounded-full">
+                </div>
+                <div
+                    class="relative w-40 h-40 bg-white/5 rounded-full flex items-center justify-center border border-white/5 backdrop-blur-2xl">
+                    <svg class="w-20 h-20 text-white/10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                </div>
             </div>
-            <div class="space-y-2">
-                <h2 class="text-3xl font-black text-white uppercase italic tracking-tighter">No Favorites Yet</h2>
-                <p class="text-white/30 text-xs font-black uppercase tracking-widest">Discover your next story and save
-                    it here.</p>
+            <div class="space-y-4">
+                <h2 class="text-5xl font-black text-white italic uppercase tracking-tighter">Your Heart is Empty</h2>
+                <p class="text-white/40 font-medium max-w-sm mx-auto">Bos belum ada favorit komik nih. Cari komik mantap
+                    terus sikat pencet tombol favorit-nya!</p>
             </div>
-            <a href="/"
-                class="px-10 py-4 bg-white text-black font-black uppercase text-[10px] tracking-[0.3em] hover:bg-pink-600 hover:text-white transition-all rounded-sm italic">
-                Explore Manga
+            <a href="/popular"
+                class="inline-flex items-center px-12 py-5 bg-pink-600 hover:bg-pink-700 text-white text-[10px] font-black uppercase tracking-[0.3em] rounded-sm transition-all shadow-[0_30px_60px_rgba(219,39,119,0.4)] hover:-translate-y-1 italic">
+                Start Exploring
             </a>
         </div>
     </div>
@@ -64,17 +85,17 @@
         const emptyState = document.getElementById('emptyState');
         const countDisplay = document.getElementById('favoritesCount');
 
-        function wsrvUrl(url) {
+        const wsrvUrl = (url) => {
             if (!url) return '/images/fallback.png';
-            if (url.includes('wsrv.nl')) return url;
-            if (url.startsWith('/')) return url;
-            return `https://wsrv.nl/?url=${encodeURIComponent(url)}&n=-1`;
-        }
+            if (url.startsWith('http')) {
+                return `https://wsrv.nl/?url=${encodeURIComponent(url)}&n=-1`;
+            }
+            return url;
+        };
 
         function renderFavorites() {
             const favorites = JSON.parse(localStorage.getItem('komikkuya_favorites') || '[]');
 
-            // Clear grid
             grid.innerHTML = '';
             countDisplay.textContent = favorites.length;
 
@@ -88,39 +109,53 @@
             emptyState.classList.add('hidden');
 
             favorites.forEach((item, index) => {
-                const card = document.createElement('div');
-                card.className = 'group/card relative animate-fade-in opacity-0';
-                card.style.animationDelay = `${index * 50}ms`;
-                card.style.animationFillMode = 'forwards';
-
                 const url = item.type === 'doujin' ? `/doujin/${item.slug}` : `/manga/${item.slug}`;
+                const typeBadge = item.type === 'doujin'
+                    ? '<span class="bg-red-600/90 text-white text-[8px] font-black px-1.5 py-0.5 rounded-px uppercase tracking-tighter">NSFW</span>'
+                    : '<span class="bg-pink-600/90 text-white text-[8px] font-black px-1.5 py-0.5 rounded-px uppercase tracking-tighter">Manga</span>';
+
+                const card = document.createElement('div');
+                card.className = 'group relative flex flex-col gap-4 animate-fade-in';
+                card.style.animationDelay = `${index * 50}ms`;
 
                 card.innerHTML = `
-                    <div class="block space-y-4 relative">
-                        <a href="${url}" class="block">
-                            <div class="relative aspect-[2/3] rounded-sm overflow-hidden border border-white/5 shadow-2xl transition-all duration-700 group-hover/card:scale-105 group-hover/card:-translate-y-2 group-hover/card:shadow-pink-600/20">
-                                <img src="${wsrvUrl(item.cover)}" alt="${item.title}"
-                                    class="w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-110"
-                                    loading="lazy">
-                                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
-                                <div class="absolute top-4 left-4">
-                                    <span class="bg-pink-600 text-white text-[8px] font-black px-2 py-1 rounded-sm uppercase tracking-widest italic">
-                                        ${item.type}
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="space-y-1.5 px-1 pt-4">
-                                <h3 class="text-xs font-black text-white uppercase italic tracking-tighter line-clamp-2 leading-tight group-hover/card:text-pink-400 transition-colors">
-                                    ${item.title}
-                                </h3>
-                                <p class="text-[9px] font-black text-white/20 uppercase tracking-widest italic">${item.source || 'Server'}</p>
-                            </div>
-                        </a>
-                        <button onclick="removeFavorite('${item.id}')" class="absolute top-4 right-4 p-2 bg-black/60 backdrop-blur-md rounded-sm text-white/40 hover:text-pink-500 transition-colors border border-white/10 opacity-0 group-hover/card:opacity-100">
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-                        </button>
+                <div class="relative aspect-[2/3] overflow-hidden rounded-sm border border-white/5 shadow-2xl transition-all duration-700 group-hover:scale-102 group-hover:border-pink-500/50 bg-primary-800">
+                    <img src="${wsrvUrl(item.cover)}" alt="${item.title}" 
+                        class="w-full h-full object-cover grayscale-[0.3] group-hover:grayscale-0 transition-all duration-1000 scale-110 group-hover:scale-100"
+                        onerror="this.src='/images/fallback.png'">
+                    
+                    <!-- Overlay Details -->
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80 group-hover:opacity-40 transition-opacity duration-700"></div>
+                    
+                    <!-- Meta Badges -->
+                    <div class="absolute top-3 left-3 flex flex-col gap-1.5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500">
+                        ${typeBadge}
+                        <span class="bg-black/80 backdrop-blur-md text-white/60 text-[8px] font-black px-1.5 py-0.5 rounded-px uppercase tracking-tighter border border-white/5">
+                            ${item.source || 'Standard'}
+                        </span>
                     </div>
-                `;
+
+                    <!-- Delete Button -->
+                    <button onclick="event.preventDefault(); removeFavorite('${item.id}');" 
+                        class="absolute top-3 right-3 opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 p-2 bg-red-600/90 hover:bg-red-700 text-white rounded-sm drop-shadow-xl z-20">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+
+                    <a href="${url}" class="absolute inset-0 z-10"></a>
+                </div>
+
+                <div class="space-y-1.5">
+                    <div class="flex items-center gap-2">
+                        <span class="text-pink-500 text-[9px] font-black uppercase tracking-widest leading-none">Saved Item</span>
+                        <div class="h-[1px] flex-grow bg-white/5"></div>
+                    </div>
+                    <h3 class="text-white font-black uppercase text-xs italic tracking-tight truncate group-hover:text-pink-400 transition-colors leading-tight">
+                        ${item.title}
+                    </h3>
+                </div>
+            `;
                 grid.appendChild(card);
             });
         }
@@ -137,10 +172,14 @@
 </script>
 
 <style>
+    .stroke-text {
+        -webkit-text-stroke: 1px rgba(255, 255, 255, 0.1);
+    }
+
     @keyframes fade-in {
         from {
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(15px);
         }
 
         to {
@@ -150,6 +189,10 @@
     }
 
     .animate-fade-in {
-        animation: fade-in 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        animation: fade-in 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .scale-102 {
+        transform: scale(1.02);
     }
 </style>

@@ -77,12 +77,11 @@
                 <div class="relative group" id="page-<%= index + 1 %>">
                     <!-- High-Impact Image Container -->
                     <div class="relative overflow-hidden bg-primary-950 min-h-[400px] flex items-center justify-center">
-                        <img data-src="https://wsrv.nl/?url=<%= encodeURIComponent(image.url) %>&n=-1"
+                        <img data-original-src="<%= image.url %>" data-index="<%= index %>"
                             src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
                             alt="Manga Page <%= index + 1 %>"
                             class="w-full h-auto opacity-0 transition-opacity duration-1000 page-img relative z-10"
-                            loading="lazy"
-                            onerror="this.onerror=null; this.src='<%= image.url %>'; this.parentElement.querySelector('.page-loader')?.remove();">
+                            loading="lazy">
 
                         <!-- Cinematic Page Loader -->
                         <div class="page-loader absolute inset-0 flex items-center justify-center z-0">
@@ -219,39 +218,72 @@
         let scrollSpeed = 2; // Pixels per frame
         let lastScrollY = window.scrollY;
 
-        // Auto-hide Header logic
+        // --- Aggressive Turbo Image Sharding & Resilience ---
+        const proxies = [
+            (url) => `https://wsrv.nl/?url=${encodeURIComponent(url)}&n=-1`,
+            (url) => `https://i0.wp.com/${url.replace(/^https?:\/\//, '')}`,
+            (url) => `https://images.weserv.nl/?url=${encodeURIComponent(url)}&n=-1`,
+            (url) => url // Original as last resort
+        ];
+
+        function getShardedProxy(url, index, attempt = 0) {
+            // Use index to shard domains (distribute across different proxy mirrors)
+            const proxyIdx = (index + attempt) % (proxies.length - 1);
+            return proxies[proxyIdx](url);
+        }
+
+        const loadImage = (img, attempt = 0) => {
+            const originalUrl = img.dataset.originalSrc;
+            const index = parseInt(img.dataset.index);
+
+            if (attempt >= proxies.length) return;
+
+            const targetUrl = getShardedProxy(originalUrl, index, attempt);
+
+            // Watchdog timer (Aggressive 3.5s for Turbo mode)
+            const watchdog = setTimeout(() => {
+                if (!img.complete || img.naturalWidth === 0) {
+                    console.log(`[Turbo] Image ${index} slow, rotating mirror...`);
+                    loadImage(img, attempt + 1);
+                }
+            }, 3500);
+
+            img.src = targetUrl;
+
+            img.onload = () => {
+                clearTimeout(watchdog);
+                img.classList.remove('opacity-0');
+                img.classList.add('opacity-100');
+                img.parentElement.querySelector('.page-loader')?.remove();
+            };
+
+            img.onerror = () => {
+                clearTimeout(watchdog);
+                loadImage(img, attempt + 1);
+            };
+        };
+
+        // --- Reader Features ---
+
         window.addEventListener('scroll', () => {
             const currentScrollY = window.scrollY;
-
-            // Show/Hide Header based on scroll direction
             if (currentScrollY > lastScrollY && currentScrollY > 200) {
                 header.classList.add('header-hidden');
             } else {
                 header.classList.remove('header-hidden');
             }
-
-            // Progress Calculation
             const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
             const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
             const scrolled = (winScroll / height) * 100;
             progressBar.style.width = scrolled + "%";
-
             lastScrollY = currentScrollY;
         }, { passive: true });
 
-        // Toggle UI
         toggleUIBtn.addEventListener('click', () => {
             isUIShown = !isUIShown;
             header.classList.toggle('header-hidden', !isUIShown);
             controls.classList.toggle('controls-hidden', !isUIShown);
         });
-
-        // Auto Scroll
-        function doScroll() {
-            if (!isAutoScrolling) return;
-            window.scrollBy(0, scrollSpeed);
-            requestAnimationFrame(doScroll);
-        }
 
         autoScrollBtn.addEventListener('click', () => {
             isAutoScrolling = !isAutoScrolling;
@@ -263,57 +295,48 @@
             }
         });
 
-        // Scroll to Top
+        function doScroll() {
+            if (!isAutoScrolling) return;
+            window.scrollBy(0, scrollSpeed);
+            requestAnimationFrame(doScroll);
+        }
+
         topBtn.addEventListener('click', () => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
-        // Image Reveal (Fade-in on Load)
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px 500px 0px'
+        // --- TURBO LOAD EXECUTION ---
+        // Instead of waiting for scroll, fire ALL image loads immediately
+        // using our multi-mirror sharding to maximize parallel processing.
+        console.log("[Reader] 🏁 Starting Turbo Parallel Load...");
+        document.querySelectorAll('.page-img').forEach(img => {
+            loadImage(img);
+        });
+
+        // --- Standardized History Saving ---
+        const saveToHistory = () => {
+            const history = JSON.parse(localStorage.getItem('readingHistory') || '[]');
+            const historyItem = {
+                title: '<%= chapter.mangaTitle %>',
+                chapterTitle: '<%= chapter.title %>',
+                url: window.location.pathname,
+                image: '<%= chapter.images[0]?.url %>',
+                type: 'manga',
+                time: new Date().getTime()
+            };
+
+            const updatedHistory = [historyItem, ...history.filter(h => h.title !== historyItem.title)].slice(0, 50);
+            localStorage.setItem('readingHistory', JSON.stringify(updatedHistory));
         };
 
-        const imageObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const img = entry.target;
-                    if (img.dataset.src) {
-                        img.src = img.dataset.src;
-                        img.onload = () => {
-                            img.classList.remove('opacity-0');
-                            img.classList.add('opacity-100');
-                            // Remove loader after fade-in
-                            setTimeout(() => {
-                                img.parentElement.querySelector('.page-loader')?.remove();
-                            }, 1000);
-                        };
-                        img.removeAttribute('data-src');
-                    }
-                    observer.unobserve(img);
-                }
-            });
-        }, observerOptions);
+        // Save immediately on load
+        saveToHistory();
 
-        document.querySelectorAll('.page-img').forEach(img => imageObserver.observe(img));
-
-        // Save History (Debounced)
+        // Update on scroll (Debounced)
         let historyTimer;
         window.addEventListener('scroll', () => {
             clearTimeout(historyTimer);
-            historyTimer = setTimeout(() => {
-                const history = JSON.parse(localStorage.getItem('readingHistory') || '[]');
-                const historyItem = {
-                    title: '<%= chapter.mangaTitle %>',
-                    chapterTitle: '<%= chapter.title %>',
-                    url: window.location.pathname,
-                    image: '<%= chapter.images[0]?.url %>',
-                    time: new Date().getTime()
-                };
-
-                const updatedHistory = [historyItem, ...history.filter(h => h.title !== historyItem.title)].slice(0, 50);
-                localStorage.setItem('readingHistory', JSON.stringify(updatedHistory));
-            }, 5000);
+            historyTimer = setTimeout(saveToHistory, 5000);
         }, { passive: true });
     });
 </script>

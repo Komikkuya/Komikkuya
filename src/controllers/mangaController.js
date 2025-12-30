@@ -50,7 +50,7 @@ const mangaController = {
                 } else {
                     // Try International API (weebcentral.com)
                     // International uses seriesId in URL, so we need to search first
-                    const intlSearchResponse = await fetch(`https://international.komikkuya.my.id/api/international/search?q=${encodeURIComponent(slug.replace(/-/g, ' '))}`);
+                    const intlSearchResponse = await fetch(`https://internationalbackup.komikkuya.my.id/api/international/search?q=${encodeURIComponent(slug.replace(/-/g, ' '))}`);
                     const intlSearchData = await intlSearchResponse.json();
 
                     if (intlSearchData.success && intlSearchData.data && intlSearchData.data.results && intlSearchData.data.results.length > 0) {
@@ -61,7 +61,7 @@ const mangaController = {
                         ) || intlSearchData.data.results[0];
 
                         if (matchedManga) {
-                            const intlDetailResponse = await fetch(`https://international.komikkuya.my.id/api/international/detail?url=${encodeURIComponent(matchedManga.url)}`);
+                            const intlDetailResponse = await fetch(`https://internationalbackup.komikkuya.my.id/api/international/detail?url=${encodeURIComponent(matchedManga.url)}`);
                             const intlData = await intlDetailResponse.json();
 
                             if (intlData.success && intlData.data && intlData.data.title) {

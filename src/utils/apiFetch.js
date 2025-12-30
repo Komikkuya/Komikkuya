@@ -1,101 +1,118 @@
 const fetch = require('node-fetch');
 
-const API_PRIMARY = 'https://komiku-api-self.vercel.app';
-const API_FALLBACK = 'https://international.komikkuya.my.id';
+const API_PRIMARY = 'https://international.komikkuya.my.id';
+const API_SECONDARY = 'https://internationalbackup.komikkuya.my.id';
+const API_FALLBACK = 'https://komiku-api-self.vercel.app';
 const TIMEOUT_MS = 10000; // 10 seconds timeout
 
 /**
- * Fetch with timeout and fallback support
- * @param {string} path - API path (e.g., '/api/custom')
- * @param {object} options - Fetch options
- * @returns {Promise<Response>}
- */
-async function fetchWithFallback(path, options = {}) {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
-
-    const fetchOptions = {
-        ...options,
-        signal: controller.signal,
-        headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-            'Accept': 'application/json',
-            ...options.headers
-        }
-    };
-
-    try {
-        // Try primary API
-        const response = await fetch(`${API_PRIMARY}${path}`, fetchOptions);
-        clearTimeout(timeoutId);
-
-        // Check for 504 Gateway Timeout
-        if (response.status === 504) {
-            console.log(`[API] Primary API returned 504 for ${path}, trying fallback...`);
-            return await fetchFromFallback(path, options);
-        }
-
-        return response;
-    } catch (error) {
-        clearTimeout(timeoutId);
-
-        // Check if it's a timeout error
-        if (error.name === 'AbortError') {
-            console.log(`[API] Primary API timeout for ${path}, trying fallback...`);
-            return await fetchFromFallback(path, options);
-        }
-
-        // Other errors - try fallback
-        console.log(`[API] Primary API error for ${path}: ${error.message}, trying fallback...`);
-        return await fetchFromFallback(path, options);
-    }
-}
-
-/**
- * Fetch from fallback API
+ * Enhanced Fetch with Parallel Racing (Fixed)
+ * Hits both primary and fallback simultaneously, returns the first successful one.
+ * Ensures the winner is NOT aborted while the loser is.
  * @param {string} path - API path
  * @param {object} options - Fetch options
  * @returns {Promise<Response>}
  */
-async function fetchFromFallback(path, options = {}) {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
+async function fetchWithFallback(path, options = {}) {
+    const primaryController = new AbortController();
+    const secondaryController = new AbortController();
+    const fallbackController = new AbortController();
 
-    const fetchOptions = {
-        ...options,
-        signal: controller.signal,
-        headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-            'Accept': 'application/json',
-            ...options.headers
+    // Global timeout to abort EVERYTHING if it takes too long
+    const timeoutId = setTimeout(() => {
+        primaryController.abort();
+        secondaryController.abort();
+        fallbackController.abort();
+    }, TIMEOUT_MS);
+
+    const racers = [
+        { name: 'Primary', url: API_PRIMARY, controller: primaryController },
+        { name: 'Secondary', url: API_SECONDARY, controller: secondaryController },
+        { name: 'Fallback', url: API_FALLBACK, controller: fallbackController }
+    ];
+
+    const makeRequest = async (racer) => {
+        const fetchOptions = {
+            ...options,
+            signal: racer.controller.signal,
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+                'Accept': 'application/json',
+                ...options.headers
+            }
+        };
+
+        try {
+            const start = Date.now();
+            const response = await fetch(`${racer.url}${path}`, fetchOptions);
+
+            if (!response.ok) {
+                throw new Error(`HTTP Error ${response.status} from ${racer.name}`);
+            }
+
+            // SUCCESS! Abort the OTHER racers only
+            console.log(`[API] ${racer.name} won the race in ${Date.now() - start}ms for ${path}`);
+            racers.forEach(r => {
+                if (r !== racer) r.controller.abort();
+            });
+
+            return response;
+        } catch (error) {
+            if (error.name !== 'AbortError') {
+                console.log(`[API] ❌ ${racer.name} lost or failed: ${error.message}`);
+            }
+            throw error;
         }
     };
 
     try {
-        const response = await fetch(`${API_FALLBACK}${path}`, fetchOptions);
+        // Promise.any returns the first successful racer
+        const result = await Promise.any(racers.map(makeRequest));
         clearTimeout(timeoutId);
-        console.log(`[API] Fallback API success for ${path}`);
-        return response;
+        return result;
     } catch (error) {
         clearTimeout(timeoutId);
-        console.error(`[API] Fallback API also failed for ${path}: ${error.message}`);
+
+        // If all failed
+        if (error.name === 'AggregateError') {
+            console.error(`[API] 🚨 All API sources failed for ${path}`);
+            throw new Error(`All API sources failed for path: ${path}. Errors: ${error.errors.map(e => e.message).join(', ')}`);
+        }
+
         throw error;
     }
 }
 
 /**
- * Fetch JSON with fallback support
+ * Legacy compatibility
+ */
+async function fetchFromFallback(path, options = {}) {
+    return fetchWithFallback(path, options);
+}
+
+/**
+ * Fetch JSON with racing support
  * @param {string} path - API path
  * @param {object} options - Fetch options
  * @returns {Promise<object>}
  */
 async function fetchJsonWithFallback(path, options = {}) {
-    const response = await fetchWithFallback(path, options);
-    return await response.json();
+    try {
+        const response = await fetchWithFallback(path, options);
+        return await response.json();
+    } catch (error) {
+        console.error(`[API] Json Fetch Error: ${error.message}`);
+        return {
+            success: false,
+            message: error.message,
+            data: [] // Return empty array to prevent view crashes
+        };
+    }
 }
 
 module.exports = {
     API_PRIMARY,
+    API_SECONDARY,
     API_FALLBACK,
     fetchWithFallback,
     fetchFromFallback,

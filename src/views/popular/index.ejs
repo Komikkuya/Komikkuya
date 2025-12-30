@@ -1,162 +1,231 @@
-<div class="min-h-screen bg-transparent text-white">
-    <div class="container mx-auto px-4 py-12">
-        <!-- High-Impact Cinematic Header -->
-        <div class="mb-16 border-l-8 border-purple-600 pl-8">
-            <h1 class="text-6xl md:text-8xl font-black uppercase italic tracking-tighter leading-none">
-                Popular <span class="text-purple-600">
-                    <%= category %>
-                </span>
-            </h1>
-            <p class="text-gray-500 mt-4 font-black uppercase tracking-[0.3em] text-sm md:text-base">
-                Koleksi paling trending dalam kategori <%= category %> saat ini
-            </p>
-        </div>
+<div class="relative min-h-screen bg-primary-950 overflow-hidden">
+    <!-- Background Ambient Glows -->
+    <div
+        class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-[800px] h-[800px] bg-purple-600/10 blur-[120px] rounded-full pointer-events-none animate-drift">
+    </div>
+    <div
+        class="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-purple-900/10 blur-[100px] rounded-full pointer-events-none animate-swell">
+    </div>
 
-        <!-- Filter & Navigation (Streaming Style) -->
-        <div class="flex flex-col gap-8 mb-16">
-            <!-- Category Selection -->
-            <div class="flex flex-wrap gap-3 overflow-x-auto pb-4 no-scrollbar">
+    <div class="max-w-[1800px] mx-auto px-6 md:px-12 relative z-10 pt-32 pb-32">
+        <!-- High-Impact Cinematic Header -->
+        <header class="relative mb-20 animate-fade-in">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-8">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3 text-purple-500 font-black tracking-[0.3em] uppercase text-xs">
+                        <span class="w-12 h-[2px] bg-purple-500"></span>
+                        TRENDING NOW
+                    </div>
+                    <h1
+                        class="text-6xl md:text-8xl font-black text-white italic tracking-tighter uppercase leading-none">
+                        Popular <br><span class="text-transparent stroke-text">
+                            <%= category %>
+                        </span>
+                    </h1>
+                    <p class="text-white/40 max-w-xl text-lg font-medium leading-relaxed">
+                        Koleksi paling trending dan banyak dibaca dalam kategori <%= category %> bos. Gak bakal nyesel
+                            deh baca ginian!
+                    </p>
+                </div>
+
+                <!-- Sort Timeline Selector (Glassmorphism) -->
+                <div
+                    class="flex items-center gap-2 bg-white/5 backdrop-blur-xl border border-white/5 p-1 rounded-sm shadow-2xl">
+                    <% ['daily', 'weekly' , 'all' ].forEach(time=> { %>
+                        <a href="/popular?category=<%= category %>&sorttime=<%= time %>"
+                            class="px-8 py-3 text-[10px] font-black uppercase tracking-widest transition-all rounded-sm italic <%= sorttime === time ? 'bg-purple-600 text-white shadow-[0_10px_20px_rgba(147,51,234,0.3)]' : 'text-white/30 hover:text-white hover:bg-white/5' %>">
+                            <%= time==='all' ? 'All Time' : (time==='daily' ? 'Today' : 'This Week' ) %>
+                        </a>
+                        <% }); %>
+                </div>
+            </div>
+        </header>
+
+        <!-- Category Filter (Floating Rail) -->
+        <nav class="mb-16 overflow-x-auto no-scrollbar animate-fade-in" style="animation-delay: 200ms">
+            <div class="flex gap-3 pb-4">
                 <% categories.forEach(cat=> { %>
                     <a href="/popular?category=<%= cat %>&sorttime=<%= sorttime %>"
-                        class="flex-shrink-0 px-8 py-3 rounded-sm text-xs font-black uppercase tracking-widest transition-all italic border <%= cat === category ? 'bg-white text-black border-white' : 'bg-transparent text-white/40 border-white/10 hover:border-purple-500 hover:text-white' %>">
+                        class="flex-shrink-0 px-8 py-4 bg-white/5 backdrop-blur-md border border-white/5 rounded-sm text-[10px] font-black uppercase tracking-[0.2em] transition-all hover:border-purple-500/50 hover:bg-white/10 italic <%= cat === category ? 'bg-white !text-black border-white' : 'text-white/40' %>">
                         <%= cat %>
                     </a>
                     <% }); %>
             </div>
-
-            <!-- Sort Timeline -->
-            <div class="flex items-center gap-4 bg-white/5 border border-white/5 p-1 rounded-sm self-start">
-                <% ['daily', 'weekly' , 'all' ].forEach(time=> { %>
-                    <a href="/popular?category=<%= category %>&sorttime=<%= time %>"
-                        class="px-6 py-2 text-[10px] font-black uppercase tracking-widest transition-all rounded-sm italic <%= sorttime === time ? 'bg-purple-600 text-white shadow-lg' : 'text-white/30 hover:text-white' %>">
-                        <%= time==='all' ? 'All Time' : (time==='daily' ? 'Today' : 'This Week' ) %>
-                    </a>
-                    <% }); %>
-            </div>
-        </div>
+        </nav>
 
         <!-- Manga Grid (Cinematic Posters) -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-6 gap-y-12">
+        <main class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-6 gap-y-16">
             <% items.forEach((item, index)=> { %>
-                <div class="group/card relative">
+                <div class="group relative flex flex-col gap-4 animate-fade-in"
+                    style="animation-delay: <%= 300 + (index * 40) %>ms">
                     <a href="/manga/<%= item.url.split('/manga/')[1]?.replace('/', '') %>" class="block">
                         <div
-                            class="relative aspect-[2/3] overflow-hidden rounded-sm bg-primary-900 shadow-2xl border border-white/5">
+                            class="relative aspect-[2/3] overflow-hidden rounded-sm border border-white/5 shadow-2xl transition-all duration-700 group-hover:scale-102 group-hover:border-purple-500/50 bg-primary-800">
                             <img src="<%= wsrvUrl(item.imageUrl) %>" alt="<%= item.title %>"
-                                class="w-full h-full object-cover transform group-hover/card:scale-110 transition-transform duration-700"
-                                loading="lazy" onerror="this.onerror=null; this.src='/images/fallback.png';">
+                                class="w-full h-full object-cover grayscale-[0.3] group-hover:grayscale-0 transition-all duration-1000 scale-110 group-hover:scale-100"
+                                loading="lazy" onerror="this.src='/images/fallback.png'">
 
-                            <!-- Cinematic Overlay -->
+                            <!-- Ranking Number (Mega Decorative) -->
                             <div
-                                class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-60 group-hover/card:opacity-90 transition-opacity duration-500">
+                                class="absolute -bottom-6 -left-4 text-9xl font-black text-white/5 italic pointer-events-none group-hover:text-purple-600/10 transition-colors leading-none tracking-tighter">
+                                <%= index + 1 + (pagination.currentPage - 1) * 20 %>
                             </div>
 
-                            <!-- Hot/Trending Number (Subtle) -->
                             <div
-                                class="absolute -bottom-4 -left-2 text-9xl font-black text-white/5 italic opacity-20 pointer-events-none group-hover/card:text-purple-600/20 transition-colors leading-none">
-                                <%= index + 1 + (pagination.currentPage - 1) * 20 %>
+                                class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80 group-hover:opacity-40 transition-opacity duration-700">
+                            </div>
+
+                            <!-- Meta Badges -->
+                            <div
+                                class="absolute top-3 left-3 flex flex-col gap-1.5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500">
+                                <span
+                                    class="bg-purple-600/90 text-white text-[8px] font-black px-1.5 py-0.5 rounded-px uppercase tracking-tighter shadow-lg">Trending</span>
+                                <% if (item.stats && item.stats.views) { %>
+                                    <span
+                                        class="bg-red-600/90 text-white text-[8px] font-black px-1.5 py-0.5 rounded-px uppercase tracking-tighter shadow-lg">Hot</span>
+                                    <% } %>
                             </div>
 
                             <% if (item.stats && item.stats.views) { %>
                                 <div
-                                    class="absolute top-3 right-3 bg-red-600 text-white text-[10px] font-black px-2 py-0.5 rounded-sm uppercase tracking-tighter shadow-xl">
-                                    <%= item.stats.views %> VIEWS
+                                    class="absolute top-3 right-3 bg-black/80 backdrop-blur-md border border-white/5 text-white/60 text-[8px] font-black px-2 py-0.5 rounded-px uppercase tracking-widest italic group-hover:text-white transition-colors">
+                                    <%= item.stats.views %> Views
                                 </div>
                                 <% } %>
 
-                                    <!-- Quick Action Reveal -->
+                                    <!-- Action Hint -->
                                     <div
-                                        class="absolute inset-0 flex flex-col justify-end p-6 translate-y-8 opacity-0 group-hover/card:translate-y-0 group-hover/card:opacity-100 transition-all duration-500">
-                                        <div class="flex items-center gap-2 mb-4">
-                                            <span
-                                                class="bg-white text-black text-[10px] font-black px-2 py-1 rounded-sm uppercase italic">Trending</span>
-                                            <span
-                                                class="text-white text-[10px] font-bold opacity-80 uppercase tracking-widest">
-                                                <%= item.type || category %>
-                                            </span>
+                                        class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                                        <div
+                                            class="w-12 h-12 bg-white/10 backdrop-blur-2xl rounded-full flex items-center justify-center border border-white/20 transform scale-50 group-hover:scale-100 transition-transform duration-500">
+                                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                            </svg>
                                         </div>
-                                        <button
-                                            class="w-full py-3 bg-white text-black text-xs font-black uppercase rounded-sm hover:bg-purple-600 hover:text-white transition-colors tracking-widest italic shadow-2xl">Baca
-                                            Sekarang</button>
                                     </div>
                         </div>
 
-                        <div class="mt-6 space-y-2">
+                        <div class="mt-6 space-y-1.5 relative z-20">
+                            <div class="flex items-center gap-2">
+                                <span
+                                    class="text-purple-500 text-[9px] font-black uppercase tracking-[0.3em] leading-none italic">
+                                    <%= item.type || category %>
+                                </span>
+                                <div class="h-[1px] flex-grow bg-white/5"></div>
+                            </div>
                             <h3
-                                class="font-black text-white uppercase tracking-tighter text-base line-clamp-1 group-hover/card:text-purple-400 transition-colors italic">
+                                class="text-white font-black uppercase text-sm italic tracking-tight truncate group-hover:text-purple-400 transition-colors leading-tight">
                                 <%= item.title %>
                             </h3>
-                            <div class="flex items-center justify-between">
-                                <span class="text-purple-500 font-bold text-xs uppercase tracking-widest">
-                                    <%= item.latestChapter?.title || 'Chapter 00' %>
-                                </span>
-                            </div>
+                            <p class="text-white/30 text-[10px] font-bold truncate tracking-widest uppercase">
+                                <%= item.latestChapter?.title || 'No Chapter Data' %>
+                            </p>
                         </div>
                     </a>
                 </div>
                 <% }); %>
-        </div>
+        </main>
 
         <!-- Cinematic Pagination -->
-        <div class="flex items-center justify-center gap-8 mt-24">
-            <a href="/popular?category=<%= category %>&sorttime=<%= sorttime %>&page=<%= pagination.currentPage > 1 ? pagination.currentPage - 1 : 1 %>"
-                class="group flex items-center gap-4 text-xs font-black text-white/40 hover:text-white transition-all uppercase tracking-widest italic <%= pagination.currentPage <= 1 ? 'opacity-0 pointer-events-none' : '' %>">
-                <svg class="w-6 h-6 transform group-hover:-translate-x-2 transition-transform" fill="none"
-                    stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                </svg>
-                Previous
-            </a>
+        <footer class="mt-32 flex flex-col items-center gap-12 animate-fade-in">
+            <div class="relative flex items-center gap-16">
+                <a href="/popular?category=<%= category %>&sorttime=<%= sorttime %>&page=<%= pagination.currentPage > 1 ? pagination.currentPage - 1 : 1 %>"
+                    class="group flex items-center gap-6 text-xs font-black text-white/20 hover:text-white transition-all uppercase tracking-[0.4em] italic <%= pagination.currentPage <= 1 ? 'opacity-0 pointer-events-none' : '' %>">
+                    <svg class="w-8 h-8 transform group-hover:-translate-x-3 transition-transform" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                    PREV
+                </a>
 
-            <div class="w-[1px] h-12 bg-white/10"></div>
+                <div class="flex flex-col items-center">
+                    <span class="text-[8px] font-black text-purple-600 uppercase tracking-[0.8em] mb-4">Location</span>
+                    <div class="relative">
+                        <span
+                            class="text-8xl font-black text-white italic leading-none tracking-tighter opacity-10 blur-sm absolute top-0 left-1/2 -translate-x-1/2 select-none">
+                            <%= pagination.currentPage %>
+                        </span>
+                        <span class="text-8xl font-black text-white italic leading-none tracking-tighter relative">
+                            <%= pagination.currentPage %>
+                        </span>
+                    </div>
+                </div>
 
-            <div class="flex flex-col items-center">
-                <span class="text-[10px] font-black text-purple-600 uppercase tracking-widest mb-1">Page</span>
-                <span class="text-3xl font-black text-white italic">
-                    <%= pagination.currentPage %>
-                </span>
+                <a href="/popular?category=<%= category %>&sorttime=<%= sorttime %>&page=<%= pagination.currentPage + 1 %>"
+                    class="group flex items-center gap-6 text-xs font-black text-white/20 hover:text-white transition-all uppercase tracking-[0.4em] italic">
+                    NEXT
+                    <svg class="w-8 h-8 transform group-hover:translate-x-3 transition-transform" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </a>
             </div>
 
-            <div class="w-[1px] h-12 bg-white/10"></div>
-
-            <a href="/popular?category=<%= category %>&sorttime=<%= sorttime %>&page=<%= pagination.currentPage + 1 %>"
-                class="group flex items-center gap-4 text-xs font-black text-white/40 hover:text-white transition-all uppercase tracking-widest italic">
-                Next
-                <svg class="w-6 h-6 transform group-hover:translate-x-2 transition-transform" fill="none"
-                    stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-            </a>
-        </div>
+            <div class="h-[1px] w-32 bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+        </footer>
     </div>
 </div>
 
-<script>
-    // Add staggered animation to grid items
-    document.addEventListener('DOMContentLoaded', function () {
-        const gridItems = document.querySelectorAll('.grid > div');
-
-        gridItems.forEach((item, index) => {
-            item.style.setProperty('--animation-order', index + 1);
-            item.style.animation = `fadeIn 0.5s ease-out forwards`;
-            item.style.animationDelay = `${(index + 1) * 0.05}s`;
-            item.style.opacity = '0';
-        });
-    });
-</script>
-
 <style>
-    /* Add some cool animations */
-    @keyframes fadeIn {
+    @keyframes drift {
+
+        0%,
+        100% {
+            transform: translate(50%, -50%) scale(1);
+        }
+
+        50% {
+            transform: translate(45%, -45%) scale(1.1);
+        }
+    }
+
+    @keyframes swell {
+
+        0%,
+        100% {
+            transform: translate(-50%, 0) scale(1);
+            opacity: 0.4;
+        }
+
+        50% {
+            transform: translate(-45%, 5%) scale(1.15);
+            opacity: 0.6;
+        }
+    }
+
+    .animate-drift {
+        animation: drift 20s ease-in-out infinite;
+    }
+
+    .animate-swell {
+        animation: swell 25s ease-in-out infinite;
+    }
+
+    .stroke-text {
+        -webkit-text-stroke: 1px rgba(255, 255, 255, 0.1);
+        color: transparent;
+    }
+
+    @keyframes fade-in {
         from {
             opacity: 0;
-            transform: translateY(10px);
+            transform: translateY(15px);
         }
 
         to {
             opacity: 1;
             transform: translateY(0);
         }
+    }
+
+    .animate-fade-in {
+        animation: fade-in 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .scale-102 {
+        transform: scale(1.02);
     }
 </style>
 

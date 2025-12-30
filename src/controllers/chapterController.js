@@ -41,7 +41,7 @@ const chapterController = {
                 }
 
                 const intlUrl = `https://weebcentral.com/chapters/${chapterId}`;
-                const response = await fetch(`https://international.komikkuya.my.id/api/international/chapter?url=${encodeURIComponent(intlUrl)}`);
+                const response = await fetch(`https://internationalbackup.komikkuya.my.id/api/international/chapter?url=${encodeURIComponent(intlUrl)}`);
                 const intlData = await response.json();
 
                 if (intlData.success && intlData.data) {

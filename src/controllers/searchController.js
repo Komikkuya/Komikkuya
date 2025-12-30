@@ -17,11 +17,11 @@ const searchController = {
                 return res.json({ success: true, data: [] });
             }
 
-            // Fetch from all endpoints in parallel with fallback for komiku API
+            // Fetch from all endpoints in parallel with resilient racing
             const [komikuResponse, asiaResponse, internationalResponse] = await Promise.allSettled([
                 fetchWithFallback(`/api/search?query=${encodeURIComponent(query)}`),
                 fetchWithFallback(`/api/asia/search?q=${encodeURIComponent(query)}`),
-                fetch(`https://international.komikkuya.my.id/api/international/search?q=${encodeURIComponent(query)}`)
+                fetchWithFallback(`/api/international/search?q=${encodeURIComponent(query)}`)
             ]);
 
             let allResults = [];
