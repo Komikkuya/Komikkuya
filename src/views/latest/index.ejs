@@ -75,7 +75,8 @@
             <% mangaList.forEach((manga, index)=> { %>
                 <div class="group relative flex flex-col gap-4 animate-fade-in"
                     style="animation-delay: <%= 300 + (index * 40) %>ms">
-                    <a href="/manga/<%= manga.url.split('/manga/')[1].replace('/', '') %>" class="block">
+                    <a href="<%= manga.url.startsWith('/') ? manga.url : '/manga/' + (manga.url.split('/manga/')[1]?.replace('/', '') || '') %>"
+                        class="block">
                         <div
                             class="relative aspect-[2/3] overflow-hidden rounded-sm border border-white/5 shadow-2xl transition-all duration-700 group-hover:scale-102 group-hover:border-purple-500/50 bg-primary-800">
                             <img src="<%= wsrvUrl(manga.imageUrl) %>" alt="<%= manga.title %>"
@@ -89,44 +90,56 @@
                             <!-- Meta Badges -->
                             <div
                                 class="absolute top-3 left-3 flex flex-col gap-1.5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500">
-                                <span
-                                    class="bg-purple-600 text-white text-[8px] font-black px-1.5 py-0.5 rounded-px uppercase tracking-tighter shadow-lg">
-                                    <%= manga.updateStatus %>
-                                </span>
-                                <span
-                                    class="bg-black/80 backdrop-blur-md border border-white/5 text-white/60 text-[8px] font-black px-1.5 py-0.5 rounded-px uppercase tracking-widest italic group-hover:text-white transition-colors">
-                                    <%= manga.stats.views %> Views
-                                </span>
+                                <% if (manga.source==='international' ) { %>
+                                    <span
+                                        class="bg-blue-600 text-white text-[8px] font-black px-1.5 py-0.5 rounded-px uppercase tracking-tighter shadow-lg">
+                                        EN
+                                    </span>
+                                    <% } else if (manga.updateStatus) { %>
+                                        <span
+                                            class="bg-purple-600 text-white text-[8px] font-black px-1.5 py-0.5 rounded-px uppercase tracking-tighter shadow-lg">
+                                            <%= manga.updateStatus %>
+                                        </span>
+                                        <% } %>
+                                            <% if (manga.stats?.views && manga.stats.views !=='-' ) { %>
+                                                <span
+                                                    class="bg-black/80 backdrop-blur-md border border-white/5 text-white/60 text-[8px] font-black px-1.5 py-0.5 rounded-px uppercase tracking-widest italic group-hover:text-white transition-colors">
+                                                    <%= manga.stats.views %> Views
+                                                </span>
+                                                <% } %>
                             </div>
 
                             <!-- "NEW" Animated Indicator -->
-                            <% if (manga.stats.timeAgo.includes('mnt') || manga.stats.timeAgo.includes('jam')) { %>
-                                <div
-                                    class="absolute top-3 right-3 flex items-center gap-2 bg-green-500 text-white text-[8px] font-black px-2 py-0.5 rounded-px uppercase tracking-widest italic shadow-lg animate-pulse">
-                                    <span class="w-1.5 h-1.5 bg-white rounded-full"></span>
-                                    NEW
-                                </div>
-                                <% } %>
-
-                                    <!-- Hover Action Reveal -->
+                            <% const timeAgo=manga.stats?.timeAgo || '' ; %>
+                                <% if (timeAgo.includes('menit') || timeAgo.includes('jam') || timeAgo.includes('mnt'))
+                                    { %>
                                     <div
-                                        class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                                        <div
-                                            class="w-12 h-12 bg-white/10 backdrop-blur-2xl rounded-full flex items-center justify-center border border-white/20 transform scale-50 group-hover:scale-100 transition-transform duration-500">
-                                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                                            </svg>
-                                        </div>
+                                        class="absolute top-3 right-3 flex items-center gap-2 bg-green-500 text-white text-[8px] font-black px-2 py-0.5 rounded-px uppercase tracking-widest italic shadow-lg animate-pulse">
+                                        <span class="w-1.5 h-1.5 bg-white rounded-full"></span>
+                                        NEW
                                     </div>
+                                    <% } %>
+
+                                        <!-- Hover Action Reveal -->
+                                        <div
+                                            class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                                            <div
+                                                class="w-12 h-12 bg-white/10 backdrop-blur-2xl rounded-full flex items-center justify-center border border-white/20 transform scale-50 group-hover:scale-100 transition-transform duration-500">
+                                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                                </svg>
+                                            </div>
+                                        </div>
                         </div>
 
                         <div class="mt-6 space-y-1.5">
                             <div class="flex items-center gap-2">
                                 <span
                                     class="text-purple-500 text-[9px] font-black uppercase tracking-[0.3em] leading-none italic">
-                                    Released <%= manga.stats.timeAgo %> ago
+                                    Released <%= manga.stats?.timeAgo || 'Baru' %> ago
                                 </span>
                                 <div class="h-[1px] flex-grow bg-white/5"></div>
                             </div>
