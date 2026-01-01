@@ -2,7 +2,7 @@ const fetch = require('node-fetch');
 const FormData = require('form-data');
 
 const AUTH_API_BASE = 'https://komikkuya-backend.vercel.app';
-const HCAPTCHA_SECRET = 'ES_ed8da6c97c95492a8bf0205c1f3e155a';
+const HCAPTCHA_SECRET = '';
 
 // Helper for hCaptcha verification
 const verifyCaptcha = async (token) => {
