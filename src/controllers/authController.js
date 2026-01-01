@@ -2,6 +2,26 @@ const fetch = require('node-fetch');
 const FormData = require('form-data');
 
 const AUTH_API_BASE = 'https://komikkuya-backend.vercel.app';
+const HCAPTCHA_SECRET = 'ES_ed8da6c97c95492a8bf0205c1f3e155a';
+
+// Helper for hCaptcha verification
+const verifyCaptcha = async (token) => {
+    try {
+        if (!token) return false;
+
+        const response = await fetch('https://hcaptcha.com/siteverify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `secret=${HCAPTCHA_SECRET}&response=${token}`
+        });
+
+        const data = await response.json();
+        return data.success;
+    } catch (e) {
+        console.error('hCaptcha Error:', e);
+        return false;
+    }
+};
 
 const authController = {
     // Show login page
@@ -38,10 +58,16 @@ const authController = {
     // Handle login
     login: async (req, res) => {
         try {
-            const { email, password } = req.body;
+            const { email, password, 'h-captcha-response': captchaToken } = req.body;
 
             if (!email || !password) {
                 return res.redirect('/auth/login?error=' + encodeURIComponent('Email dan password wajib diisi'));
+            }
+
+            // Verify Captcha
+            const isCaptchaValid = await verifyCaptcha(captchaToken);
+            if (!isCaptchaValid) {
+                return res.redirect('/auth/login?error=' + encodeURIComponent('Silahkan selesaikan captcha terlebih dahulu'));
             }
 
             const response = await fetch(`${AUTH_API_BASE}/auth/login`, {
@@ -77,10 +103,16 @@ const authController = {
     // Handle register
     register: async (req, res) => {
         try {
-            const { email, password, username } = req.body;
+            const { email, password, username, 'h-captcha-response': captchaToken } = req.body;
 
             if (!email || !password || !username) {
                 return res.redirect('/auth/register?error=' + encodeURIComponent('Semua field wajib diisi'));
+            }
+
+            // Verify Captcha
+            const isCaptchaValid = await verifyCaptcha(captchaToken);
+            if (!isCaptchaValid) {
+                return res.redirect('/auth/register?error=' + encodeURIComponent('Silahkan selesaikan captcha terlebih dahulu'));
             }
 
             const response = await fetch(`${AUTH_API_BASE}/auth/register`, {
