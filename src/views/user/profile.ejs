@@ -169,7 +169,7 @@
             document.getElementById('username').textContent = user.username;
 
             if (user.profile_picture) {
-                document.getElementById('profileImage').src = `https://auth.komikkuya.my.id${user.profile_picture}`;
+                document.getElementById('profileImage').src = `${user.profile_picture}`;
             }
 
             // Visibility badges

@@ -194,14 +194,37 @@
     }
 
     function formatDate(timestamp) {
-      const date = new Date(timestamp);
-      const now = new Date();
-      const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+      if (!timestamp) return 'Baru Saja';
 
-      if (diffDays === 0) return 'Tadi';
+      let date;
+      // Handle numeric string or number
+      if (typeof timestamp === 'string' && !isNaN(timestamp)) {
+        date = new Date(parseInt(timestamp));
+      } else {
+        date = new Date(timestamp);
+      }
+
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        return 'Baru Saja';
+      }
+
+      const now = new Date();
+      const diffMs = now - date;
+      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+      if (diffMs < 0) return 'Tadi'; // Handle future dates gracefully
+      if (diffDays === 0) {
+        const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+        if (diffHours === 0) {
+          const diffMins = Math.floor(diffMs / (1000 * 60));
+          return diffMins <= 1 ? 'Tadi' : `${diffMins} menit lalu`;
+        }
+        return `${diffHours} jam lalu`;
+      }
       if (diffDays === 1) return 'Kemarin';
       if (diffDays < 7) return `${diffDays} hari lalu`;
-      return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+      return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
     }
 
     function showModal(modal) {

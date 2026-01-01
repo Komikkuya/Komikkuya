@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 const FormData = require('form-data');
 
-const AUTH_API_BASE = 'https://auth.komikkuya.my.id';
+const AUTH_API_BASE = 'https://komikkuya-backend.vercel.app';
 
 const authController = {
     // Show login page

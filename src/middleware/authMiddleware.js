@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 
-const AUTH_API_BASE = 'https://auth.komikkuya.my.id';
+const AUTH_API_BASE = 'https://komikkuya-backend.vercel.app';
 
 /**
  * Auth Middleware
@@ -36,7 +36,7 @@ const authMiddleware = async (req, res, next) => {
         if (data.success && data.data?.user) {
             // Add profile picture full URL if exists
             if (data.data.user.profile_picture) {
-                data.data.user.profile_picture_url = `${AUTH_API_BASE}${data.data.user.profile_picture}`;
+                data.data.user.profile_picture_url = `${data.data.user.profile_picture}`;
             }
             res.locals.user = data.data.user;
         } else {
