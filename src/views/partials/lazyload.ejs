@@ -94,6 +94,14 @@
                 if (!isProcessable) return;
 
                 img.dataset.lazyProcessed = 'true';
+
+                // Check if the image is already loaded/cached (complete with valid dimensions)
+                if (img.complete && img.naturalWidth > 0) {
+                    // Image already loaded - just mark as loaded and skip lazyload
+                    img.classList.add('loaded');
+                    return;
+                }
+
                 img.dataset.lazySrc = originalSrc;
 
                 // Use a tiny transparent GIF as placeholder

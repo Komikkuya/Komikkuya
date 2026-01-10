@@ -3,7 +3,6 @@ const fetch = require('node-fetch');
 const API_PRIMARY = 'https://international.komikkuya.my.id';
 const API_SECONDARY = 'https://internationalbackup.komikkuya.my.id';
 const API_FALLBACK = 'https://komiku-api-self.vercel.app';
-const API_NETLIFY = 'https://komikkuyaapi.netlify.app';
 const TIMEOUT_MS = 10000; // 10 seconds timeout
 
 /**
@@ -32,7 +31,6 @@ async function fetchWithFallback(path, options = {}) {
         { name: 'Primary', url: API_PRIMARY, controller: primaryController },
         { name: 'Secondary', url: API_SECONDARY, controller: secondaryController },
         { name: 'Vercel', url: API_FALLBACK, controller: fallbackController },
-        { name: 'Netlify', url: API_NETLIFY, controller: netlifyController }
     ];
 
     const makeRequest = async (racer) => {
@@ -118,7 +116,6 @@ module.exports = {
     API_PRIMARY,
     API_SECONDARY,
     API_FALLBACK,
-    API_NETLIFY,
     fetchWithFallback,
     fetchFromFallback,
     fetchJsonWithFallback

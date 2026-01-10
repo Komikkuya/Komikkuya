@@ -2,7 +2,7 @@ const fetch = require('node-fetch');
 const FormData = require('form-data');
 
 const AUTH_API_BASE = 'https://auth.komikkuya.my.id';
-const HCAPTCHA_SECRET = process.env.HCAPTCHA_SECRET; // Must be in .env
+const HCAPTCHA_SECRET = process.env.HCAPTCHA_SECRET || 'ES_ed8da6c97c95492a8bf0205c1f3e155a'; // Should be in .env
 
 // Helper for hCaptcha verification
 const verifyCaptcha = async (token) => {
@@ -533,7 +533,7 @@ const authController = {
                 return res.json({ success: false, message: 'Not authenticated' });
             }
 
-            const { id, slug, title, cover, type, source } = req.body;
+            const { id, slug, title, cover, type, source, url } = req.body;
 
             const response = await fetch(`${AUTH_API_BASE}/favorites`, {
                 method: 'POST',
@@ -541,7 +541,7 @@ const authController = {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({ id, slug, title, cover, type, source })
+                body: JSON.stringify({ id, slug, title, cover, type, source, url })
             });
 
             const data = await response.json();

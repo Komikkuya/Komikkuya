@@ -21,7 +21,9 @@ const mangaController = {
 
             // Check if Komiku API returned valid data
             let sourceType = 'komiku';
-            if (!data || !data.title || data.error) {
+            if (data && data.title && !data.error) {
+                data.originalUrl = komikuUrl;
+            } else {
                 // Try Asia API with fallback
                 const asiaUrl = `https://westmanga.me/comic/${slug}`;
                 const asiaData = await fetchJsonWithFallback(`/api/asia/detail?url=${encodeURIComponent(asiaUrl)}`);

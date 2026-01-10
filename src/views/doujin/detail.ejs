@@ -273,7 +273,8 @@
                 title: '<%= doujin.title %>',
                 cover: '<%= doujin.cover || doujin.thumbnail || doujin.imageUrl %>' || '/images/fallback.png',
                 type: 'doujin',
-                source: '<%= doujin.source || "Server" %>'
+                source: '<%= doujin.source || "Server" %>',
+                url: '<%= doujin.originalUrl || "" %>'
             };
 
             function updateFavoriteUI(isFavorited) {

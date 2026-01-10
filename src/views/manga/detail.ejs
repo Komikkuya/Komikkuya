@@ -338,7 +338,8 @@
                 title: '<%= manga.title %>',
                 cover: '<%= manga.coverImage || manga.thumbnail || manga.imageUrl %>' || '/images/fallback.png',
                 type: '<%= manga.type || "Manga" %>',
-                source: '<%= manga.source || "Server" %>'
+                source: '<%= manga.source || "Server" %>',
+                url: '<%= manga.originalUrl || "" %>'
             };
 
             function updateFavoriteUI(isFavorited) {
@@ -422,11 +423,12 @@
             }
 
             // --- TURBO LOAD SYSTEM FOR COVER & BANNER ---
+            // Try original URL first, fallback to proxies if failed
             const proxies = [
+                (url) => url, // Original URL first
                 (url) => `https://wsrv.nl/?url=${encodeURIComponent(url)}&n=-1`,
                 (url) => `https://i0.wp.com/${url.replace(/^https?:\/\//, '')}`,
-                (url) => `https://images.weserv.nl/?url=${encodeURIComponent(url)}&n=-1`,
-                (url) => url // Original
+                (url) => `https://images.weserv.nl/?url=${encodeURIComponent(url)}&n=-1`
             ];
 
             function getShardedProxy(url, indexStr, attempt = 0) {

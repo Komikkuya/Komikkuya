@@ -61,7 +61,7 @@
                     <a href="/manga/<%= item.url.split('/manga/')[1]?.replace('/', '') %>" class="block">
                         <div
                             class="relative aspect-[2/3] overflow-hidden rounded-sm border border-white/5 shadow-2xl transition-all duration-700 group-hover:scale-102 group-hover:border-purple-500/50 bg-primary-800">
-                            <img src="<%= wsrvUrl(item.imageUrl) %>" alt="<%= item.title %>"
+                            <img src="<%= item.imageUrl %>" alt="<%= item.title %>"
                                 class="w-full h-full object-cover grayscale-[0.3] group-hover:grayscale-0 transition-all duration-1000 scale-110 group-hover:scale-100"
                                 loading="lazy" onerror="this.src='/images/fallback.png'">
 

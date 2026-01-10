@@ -131,7 +131,7 @@
 
                         <!-- Full-Bleed Background Image with Ken Burns Zoom Effect -->
                         <div class="absolute inset-0 z-0 overflow-hidden">
-                            <img src="<%= wsrvUrl(manga.imageUrl) %>" alt="<%= manga.title %>"
+                            <img src="<%= manga.imageUrl %>" alt="<%= manga.title %>"
                                 class="hero-img w-full h-full object-cover object-[center_20%] transition-transform duration-[12000ms] ease-out <%= index === 0 ? 'scale-110' : 'scale-100' %>"
                                 style="filter: brightness(0.55) contrast(1.2) saturate(1.15);">
                         </div>
@@ -443,7 +443,7 @@
                                             class="block">
                                             <div
                                                 class="relative aspect-[2/3] overflow-hidden rounded-sm bg-primary-800 shadow-2xl">
-                                                <img src="<%= wsrvUrl(manga.imageUrl) %>" alt="<%= manga.title %>"
+                                                <img src="<%= manga.imageUrl %>" alt="<%= manga.title %>"
                                                     class="w-full h-full object-cover transform group-hover/card:scale-110 group-hover/card:rotate-1 transition-all duration-700"
                                                     loading="lazy"
                                                     onerror="this.onerror=null; this.src='/images/fallback.png';">
@@ -572,7 +572,7 @@
                                             class="block">
                                             <div
                                                 class="relative aspect-[2/3] overflow-hidden rounded-sm bg-primary-800 shadow-xl border border-white/5">
-                                                <img src="<%= wsrvUrl(manga.imageUrl) %>" alt="<%= manga.title %>"
+                                                <img src="<%= manga.imageUrl %>" alt="<%= manga.title %>"
                                                     class="w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-105"
                                                     loading="lazy"
                                                     onerror="this.onerror=null; this.src='/images/fallback.png';">
@@ -666,7 +666,7 @@
                                                 </div>
                                                 <div
                                                     class="relative w-14 h-20 flex-shrink-0 overflow-hidden rounded-sm group-hover/item:ring-2 ring-purple-600 transition-all">
-                                                    <img src="<%= wsrvUrl(manga.imageUrl) %>" alt="<%= manga.title %>"
+                                                    <img src="<%= manga.imageUrl %>" alt="<%= manga.title %>"
                                                         class="w-full h-full object-cover">
                                                 </div>
                                                 <div class="flex-1 min-w-0">
@@ -701,7 +701,7 @@
                                                 </div>
                                                 <div
                                                     class="relative w-14 h-20 flex-shrink-0 overflow-hidden rounded-sm">
-                                                    <img src="<%= wsrvUrl(manga.imageUrl) %>" alt="<%= manga.title %>"
+                                                    <img src="<%= manga.imageUrl %>" alt="<%= manga.title %>"
                                                         class="w-full h-full object-cover">
                                                 </div>
                                                 <div class="flex-1 min-w-0">
@@ -729,7 +729,7 @@
                                                 </div>
                                                 <div
                                                     class="relative w-14 h-20 flex-shrink-0 overflow-hidden rounded-sm">
-                                                    <img src="<%= wsrvUrl(manga.imageUrl) %>" alt="<%= manga.title %>"
+                                                    <img src="<%= manga.imageUrl %>" alt="<%= manga.title %>"
                                                         class="w-full h-full object-cover">
                                                 </div>
                                                 <div class="flex-1 min-w-0">
@@ -772,7 +772,8 @@
                                         <!-- Cover Image -->
                                         <div
                                             class="relative w-12 h-16 flex-shrink-0 overflow-hidden rounded-sm bg-white/5">
-                                            <img src="<%= manga.imageUrl %>" alt="<%= manga.title %>"
+                                            <img src="<%= manga.imageUrl ? (manga.imageUrl.includes('?resize=') ? manga.imageUrl.replace(/\?resize=[^&]*/, '?resize=100,135') : manga.imageUrl + (manga.imageUrl.includes('?') ? '&resize=100,135' : '?resize=100,135')) : '' %>"
+                                                alt="<%= manga.title %>"
                                                 class="w-full h-full object-cover transition-transform duration-500 group-hover/update:scale-110"
                                                 onerror="this.src='/assets/fallback.png'">
                                             <!-- Source Badge -->
